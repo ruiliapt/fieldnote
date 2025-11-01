@@ -68,8 +68,15 @@ class MainWindow(QMainWindow):
     def create_data_tab(self):
         """创建数据管理标签页"""
         widget = QWidget()
-        layout = QVBoxLayout()
-        widget.setLayout(layout)
+        # 使用水平布局：左边录入，右边列表
+        main_layout = QHBoxLayout()
+        widget.setLayout(main_layout)
+        
+        # ===== 左侧：录入区域 =====
+        left_widget = QWidget()
+        left_layout = QVBoxLayout()
+        left_widget.setLayout(left_layout)
+        left_widget.setMaximumWidth(500)  # 限制左侧宽度
         
         # 输入区域
         input_group = QGroupBox("语料录入")
@@ -123,34 +130,46 @@ class MainWindow(QMainWindow):
         self.notes_input.setPlaceholderText("输入备注（可选）")
         input_layout.addRow("备注:", self.notes_input)
         
-        layout.addWidget(input_group)
+        left_layout.addWidget(input_group)
         
         # 按钮区域
-        button_layout = QHBoxLayout()
+        button_group = QGroupBox("操作")
+        button_group_layout = QVBoxLayout()
+        button_group.setLayout(button_group_layout)
         
         add_btn = QPushButton("添加语料")
         add_btn.clicked.connect(self.add_entry)
-        button_layout.addWidget(add_btn)
+        button_group_layout.addWidget(add_btn)
         
         update_btn = QPushButton("更新语料")
         update_btn.clicked.connect(self.update_entry)
-        button_layout.addWidget(update_btn)
+        button_group_layout.addWidget(update_btn)
         
         delete_btn = QPushButton("删除语料")
         delete_btn.clicked.connect(self.delete_entry)
-        button_layout.addWidget(delete_btn)
+        button_group_layout.addWidget(delete_btn)
         
         clear_btn = QPushButton("清空输入")
         clear_btn.clicked.connect(self.clear_inputs)
-        button_layout.addWidget(clear_btn)
+        button_group_layout.addWidget(clear_btn)
         
         import_btn = QPushButton("批量导入")
         import_btn.clicked.connect(self.import_data)
-        button_layout.addWidget(import_btn)
+        button_group_layout.addWidget(import_btn)
         
-        layout.addLayout(button_layout)
+        left_layout.addWidget(button_group)
+        left_layout.addStretch()  # 添加弹性空间
+        
+        # ===== 右侧：数据列表区域 =====
+        right_widget = QWidget()
+        right_layout = QVBoxLayout()
+        right_widget.setLayout(right_layout)
         
         # 数据表格
+        list_group = QGroupBox("已录入语料")
+        list_layout = QVBoxLayout()
+        list_group.setLayout(list_layout)
+        
         self.data_table = QTableWidget()
         self.data_table.setColumnCount(6)
         self.data_table.setHorizontalHeaderLabels(
@@ -158,11 +177,17 @@ class MainWindow(QMainWindow):
         )
         self.data_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.data_table.cellClicked.connect(self.load_entry_to_form)
-        layout.addWidget(self.data_table)
+        list_layout.addWidget(self.data_table)
         
         # 统计信息
         self.stats_label = QLabel("总计: 0 条语料")
-        layout.addWidget(self.stats_label)
+        list_layout.addWidget(self.stats_label)
+        
+        right_layout.addWidget(list_group)
+        
+        # 将左右两侧添加到主布局
+        main_layout.addWidget(left_widget)
+        main_layout.addWidget(right_widget)
         
         return widget
     
