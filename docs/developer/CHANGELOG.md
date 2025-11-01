@@ -6,6 +6,14 @@
 
 ## [Unreleased]
 
+## [0.1.4] - 2025-11-01
+
+### Fixed
+- **关键修复**: 排除导致崩溃的 Qt 权限插件
+  - 移除 `qdarwinpermissionplugin_location` 插件避免全局初始化崩溃
+  - 修改 PyInstaller spec 文件自定义打包配置
+  - **真正解决** macOS 启动崩溃问题
+
 ## [0.1.3] - 2025-11-01
 
 ### Fixed

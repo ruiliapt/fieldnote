@@ -12,36 +12,18 @@ if ! poetry run python -c "import PyInstaller" 2>/dev/null; then
     poetry add --group dev pyinstaller
 fi
 
-# 清理旧的构建
+# 清理旧的构建（保留 spec 文件）
 echo "清理旧的构建文件..."
-rm -rf build dist *.spec
+rm -rf build dist
 
 # 打包
 echo ""
-echo "开始打包（macOS .app 模式，包含 Qt 修复）..."
+echo "开始打包（macOS .app 模式，使用自定义 spec 排除问题插件）..."
+# 使用自定义 Fieldnote.spec（已配置排除 Qt 权限插件）
 poetry run pyinstaller \
-    --name="Fieldnote" \
-    --windowed \
-    --osx-bundle-identifier="com.linguistics.fieldnote" \
-    --add-data="README.md:." \
-    --hidden-import=PyQt6 \
-    --hidden-import=PyQt6.QtCore \
-    --hidden-import=PyQt6.QtGui \
-    --hidden-import=PyQt6.QtWidgets \
-    --hidden-import=PyQt6.sip \
-    --hidden-import=docx \
-    --hidden-import=docx.oxml \
-    --hidden-import=docx.oxml.ns \
-    --hidden-import=pandas \
-    --hidden-import=sqlite3 \
-    --hidden-import=database \
-    --hidden-import=gui \
-    --hidden-import=exporter \
-    --copy-metadata=PyQt6 \
-    --copy-metadata=PyQt6-Qt6 \
     --clean \
     --noconfirm \
-    main.py
+    Fieldnote.spec
 
 echo ""
 echo "测试启动..."
