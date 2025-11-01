@@ -252,14 +252,14 @@ class WordExporter:
             self.doc = Document()
             
             for idx, entry in enumerate(entries, 1):
-                # 添加编号（如果需要）
+                # 准备编号（如果需要）
+                numbering_text = ""
                 if show_numbering:
                     example_id = entry.get('example_id', '')
                     if example_id:
-                        p = self.doc.add_paragraph(f"({example_id})")
+                        numbering_text = f"({example_id}) "
                     else:
-                        p = self.doc.add_paragraph(f"({idx})")
-                    p.paragraph_format.space_after = Pt(3)
+                        numbering_text = f"({idx}) "
                 
                 # 分词
                 source_text = entry.get('source_text', '').strip()
@@ -322,7 +322,11 @@ class WordExporter:
                     # 填充第一行（原文）
                     for col_idx, word in enumerate(source_words):
                         cell = table.rows[0].cells[col_idx]
-                        cell.text = word
+                        # 第一个单元格加上编号
+                        if col_idx == 0 and numbering_text:
+                            cell.text = numbering_text + word
+                        else:
+                            cell.text = word
                         # 设置单元格格式
                         for paragraph in cell.paragraphs:
                             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -372,7 +376,8 @@ class WordExporter:
                         tblBorders.append(border)
                     tblPr.append(tblBorders)
                     
-                    table.rows[0].cells[0].text = source_text
+                    # 第一行加上编号
+                    table.rows[0].cells[0].text = numbering_text + source_text if numbering_text else source_text
                     table.rows[1].cells[0].text = gloss
                     if translation:
                         table.rows[2].cells[0].text = f"'{translation}'"
