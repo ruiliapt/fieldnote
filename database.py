@@ -49,13 +49,19 @@ class CorpusDatabase:
                 notes TEXT,
                 source_text_cn TEXT,
                 gloss_cn TEXT,
-                translation_cn TEXT
+                translation_cn TEXT,
+                entry_type TEXT DEFAULT 'sentence',
+                group_id TEXT,
+                group_name TEXT,
+                speaker TEXT,
+                turn_number INTEGER
             )
         """)
         self.connection.commit()
         
         # 检查并添加新字段（用于数据库迁移）
         self._migrate_add_chinese_fields()
+        self._migrate_add_type_fields()
     
     def _migrate_add_chinese_fields(self):
         """数据库迁移：添加汉字字段（如果不存在）"""
@@ -74,12 +80,37 @@ class CorpusDatabase:
             
             self.connection.commit()
         except Exception as e:
-            print(f"数据库迁移失败: {e}")
+            print(f"数据库迁移（汉字字段）失败: {e}")
+    
+    def _migrate_add_type_fields(self):
+        """数据库迁移：添加类型分类字段（如果不存在）"""
+        try:
+            self.cursor.execute("PRAGMA table_info(corpus)")
+            columns = [row[1] for row in self.cursor.fetchall()]
+            
+            # 添加缺失的字段
+            if 'entry_type' not in columns:
+                self.cursor.execute("ALTER TABLE corpus ADD COLUMN entry_type TEXT DEFAULT 'sentence'")
+            if 'group_id' not in columns:
+                self.cursor.execute("ALTER TABLE corpus ADD COLUMN group_id TEXT")
+            if 'group_name' not in columns:
+                self.cursor.execute("ALTER TABLE corpus ADD COLUMN group_name TEXT")
+            if 'speaker' not in columns:
+                self.cursor.execute("ALTER TABLE corpus ADD COLUMN speaker TEXT")
+            if 'turn_number' not in columns:
+                self.cursor.execute("ALTER TABLE corpus ADD COLUMN turn_number INTEGER")
+            
+            self.connection.commit()
+        except Exception as e:
+            print(f"数据库迁移（类型字段）失败: {e}")
     
     def insert_entry(self, example_id: str, source_text: str, gloss: str, 
                      translation: str, notes: str = "", 
                      source_text_cn: str = "", gloss_cn: str = "", 
-                     translation_cn: str = "") -> int:
+                     translation_cn: str = "",
+                     entry_type: str = "sentence", group_id: str = "", 
+                     group_name: str = "", speaker: str = "", 
+                     turn_number: int = None) -> int:
         """
         插入一条语料记录
         
@@ -92,23 +123,33 @@ class CorpusDatabase:
             source_text_cn: 原文(汉字)
             gloss_cn: 词汇分解(汉字)
             translation_cn: 翻译(汉字)
+            entry_type: 条目类型 (word/sentence/discourse/dialogue)
+            group_id: 分组ID (语篇/对话)
+            group_name: 分组名称 (语篇/对话)
+            speaker: 说话人 (对话)
+            turn_number: 话轮序号
             
         Returns:
             新插入记录的ID
         """
         self.cursor.execute("""
             INSERT INTO corpus (example_id, source_text, gloss, translation, notes, 
-                              source_text_cn, gloss_cn, translation_cn)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                              source_text_cn, gloss_cn, translation_cn,
+                              entry_type, group_id, group_name, speaker, turn_number)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (example_id, source_text, gloss, translation, notes, 
-              source_text_cn, gloss_cn, translation_cn))
+              source_text_cn, gloss_cn, translation_cn,
+              entry_type, group_id, group_name, speaker, turn_number))
         self.connection.commit()
         return self.cursor.lastrowid
     
     def update_entry(self, entry_id: int, example_id: str, source_text: str, 
                      gloss: str, translation: str, notes: str = "",
                      source_text_cn: str = "", gloss_cn: str = "", 
-                     translation_cn: str = "") -> bool:
+                     translation_cn: str = "",
+                     entry_type: str = "sentence", group_id: str = "", 
+                     group_name: str = "", speaker: str = "", 
+                     turn_number: int = None) -> bool:
         """
         更新一条语料记录
         
@@ -122,6 +163,11 @@ class CorpusDatabase:
             source_text_cn: 原文(汉字)
             gloss_cn: 词汇分解(汉字)
             translation_cn: 翻译(汉字)
+            entry_type: 条目类型
+            group_id: 分组ID
+            group_name: 分组名称
+            speaker: 说话人
+            turn_number: 话轮序号
             
         Returns:
             是否更新成功
@@ -129,10 +175,12 @@ class CorpusDatabase:
         self.cursor.execute("""
             UPDATE corpus 
             SET example_id = ?, source_text = ?, gloss = ?, translation = ?, notes = ?,
-                source_text_cn = ?, gloss_cn = ?, translation_cn = ?
+                source_text_cn = ?, gloss_cn = ?, translation_cn = ?,
+                entry_type = ?, group_id = ?, group_name = ?, speaker = ?, turn_number = ?
             WHERE id = ?
         """, (example_id, source_text, gloss, translation, notes, 
-              source_text_cn, gloss_cn, translation_cn, entry_id))
+              source_text_cn, gloss_cn, translation_cn,
+              entry_type, group_id, group_name, speaker, turn_number, entry_id))
         self.connection.commit()
         return self.cursor.rowcount > 0
     
@@ -242,13 +290,132 @@ class CorpusDatabase:
                     notes=entry.get("notes", ""),
                     source_text_cn=entry.get("source_text_cn", ""),
                     gloss_cn=entry.get("gloss_cn", ""),
-                    translation_cn=entry.get("translation_cn", "")
+                    translation_cn=entry.get("translation_cn", ""),
+                    entry_type=entry.get("entry_type", "sentence"),
+                    group_id=entry.get("group_id", ""),
+                    group_name=entry.get("group_name", ""),
+                    speaker=entry.get("speaker", ""),
+                    turn_number=entry.get("turn_number", None)
                 )
                 count += 1
             except Exception as e:
                 print(f"导入记录失败: {e}")
                 continue
         return count
+    
+    def get_entries_by_type(self, entry_type: str) -> List[Dict]:
+        """
+        按类型获取语料记录
+        
+        Args:
+            entry_type: 条目类型 (word/sentence/discourse/dialogue)
+            
+        Returns:
+            符合类型的语料记录列表
+        """
+        self.cursor.execute(
+            "SELECT * FROM corpus WHERE entry_type = ? ORDER BY id", 
+            (entry_type,)
+        )
+        rows = self.cursor.fetchall()
+        return [dict(row) for row in rows]
+    
+    def get_groups_by_type(self, entry_type: str) -> List[Dict]:
+        """
+        获取指定类型的所有分组（语篇或对话）
+        
+        Args:
+            entry_type: discourse 或 dialogue
+            
+        Returns:
+            分组列表，每个包含 group_id, group_name, count
+        """
+        self.cursor.execute("""
+            SELECT group_id, group_name, COUNT(*) as count
+            FROM corpus
+            WHERE entry_type = ? AND group_id IS NOT NULL AND group_id != ''
+            GROUP BY group_id, group_name
+            ORDER BY group_id
+        """, (entry_type,))
+        rows = self.cursor.fetchall()
+        return [dict(row) for row in rows]
+    
+    def get_entries_by_group(self, group_id: str) -> List[Dict]:
+        """
+        获取某个分组（语篇/对话）的所有条目
+        
+        Args:
+            group_id: 分组ID
+            
+        Returns:
+            该分组的所有语料记录
+        """
+        self.cursor.execute("""
+            SELECT * FROM corpus 
+            WHERE group_id = ? 
+            ORDER BY turn_number, id
+        """, (group_id,))
+        rows = self.cursor.fetchall()
+        return [dict(row) for row in rows]
+    
+    def get_next_group_id(self, entry_type: str) -> str:
+        """
+        生成下一个分组ID
+        
+        Args:
+            entry_type: discourse 或 dialogue
+            
+        Returns:
+            新的分组ID (如 DSC001, DLG001)
+        """
+        prefix = "DSC" if entry_type == "discourse" else "DLG"
+        self.cursor.execute("""
+            SELECT group_id FROM corpus 
+            WHERE entry_type = ? AND group_id LIKE ? 
+            ORDER BY group_id DESC LIMIT 1
+        """, (entry_type, f"{prefix}%"))
+        row = self.cursor.fetchone()
+        
+        if row and row[0]:
+            # 提取数字部分并加1
+            last_id = row[0]
+            try:
+                num = int(last_id[3:]) + 1
+                return f"{prefix}{num:03d}"
+            except:
+                return f"{prefix}001"
+        return f"{prefix}001"
+    
+    def delete_group(self, group_id: str) -> bool:
+        """
+        删除整个分组（语篇/对话）的所有条目
+        
+        Args:
+            group_id: 分组ID
+            
+        Returns:
+            是否删除成功
+        """
+        self.cursor.execute("DELETE FROM corpus WHERE group_id = ?", (group_id,))
+        self.connection.commit()
+        return self.cursor.rowcount > 0
+    
+    def rename_group(self, group_id: str, new_name: str) -> bool:
+        """
+        重命名分组
+        
+        Args:
+            group_id: 分组ID
+            new_name: 新名称
+            
+        Returns:
+            是否重命名成功
+        """
+        self.cursor.execute("""
+            UPDATE corpus SET group_name = ? WHERE group_id = ?
+        """, (new_name, group_id))
+        self.connection.commit()
+        return self.cursor.rowcount > 0
     
     def close(self):
         """关闭数据库连接"""
