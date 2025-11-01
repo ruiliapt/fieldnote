@@ -18,7 +18,7 @@ rm -rf build dist *.spec
 
 # 打包
 echo ""
-echo "开始打包（macOS .app 模式）..."
+echo "开始打包（macOS .app 模式，包含 Qt 修复）..."
 poetry run pyinstaller \
     --name="Fieldnote" \
     --windowed \
@@ -37,6 +37,8 @@ poetry run pyinstaller \
     --hidden-import=database \
     --hidden-import=gui \
     --hidden-import=exporter \
+    --copy-metadata=PyQt6 \
+    --copy-metadata=PyQt6-Qt6 \
     --clean \
     --noconfirm \
     main.py
