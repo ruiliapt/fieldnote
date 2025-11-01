@@ -120,20 +120,21 @@ class TextFormatter:
         """
         lines = []
         
-        # 编号行
+        # 准备编号
+        numbering_text = ""
         if show_numbering:
             example_id = entry.get('example_id', '')
             if example_id:
                 if number_format == "()":
-                    lines.append(f"({example_id})")
+                    numbering_text = f"({example_id}) "
                 else:
-                    lines.append(f"{example_id}.")
+                    numbering_text = f"{example_id}. "
             else:
                 entry_id = entry.get('id', '')
                 if number_format == "()":
-                    lines.append(f"({entry_id})")
+                    numbering_text = f"({entry_id}) "
                 else:
-                    lines.append(f"{entry_id}.")
+                    numbering_text = f"{entry_id}. "
         
         # 分词（按空格分割）
         source_text = entry.get('source_text', '').strip()
@@ -141,8 +142,18 @@ class TextFormatter:
         translation = entry.get('translation', '').strip()
         notes = entry.get('notes', '').strip()
         
+        # 计算缩进空格数（编号的长度）
+        indent_spaces = ' ' * len(numbering_text)
+        
         # 原文行和注释行 - 进行词对齐（支持自动分行）
-        if ' ' in source_text and ' ' in gloss:
+        source_has_words = len(source_text.split()) > 1
+        gloss_has_words = len(gloss.split()) > 1
+        
+        if source_has_words and gloss_has_words:
+            # 多词情况：编号单独一行，然后词对齐
+            if numbering_text:
+                lines.append(numbering_text.rstrip())
+            
             source_words = source_text.split()
             gloss_words = gloss.split()
             
@@ -175,23 +186,31 @@ class TextFormatter:
                 aligned_source, aligned_gloss = TextFormatter.align_words(source_words, gloss_words)
                 lines.append(f"    {aligned_source}")
                 lines.append(f"    {aligned_gloss}")
+            
+            # 翻译行
+            if translation:
+                if notes:
+                    lines.append(f"    '{translation}' ({notes})")
+                else:
+                    lines.append(f"    '{translation}'")
+            elif notes:
+                lines.append(f"    ({notes})")
         else:
-            # 如果没有空格，直接上下显示（不对齐）
-            lines.append(f"    {source_text}")
+            # 单词情况：编号和原文在同一行
+            lines.append(f"{numbering_text}{source_text}")
+            
+            # gloss 行（缩进对齐）
             if gloss:
-                lines.append(f"    {gloss}")
-        
-        # 自由翻译行（用单引号包围，与原文第一个词对齐）
-        if translation:
-            # 检查是否需要添加额外注释
-            if notes:
-                # 格式: '翻译' (备注)
-                lines.append(f"    '{translation}' ({notes})")
-            else:
-                lines.append(f"    '{translation}'")
-        elif notes:
-            # 只有备注没有翻译
-            lines.append(f"    ({notes})")
+                lines.append(f"{indent_spaces}{gloss}")
+            
+            # 翻译行（缩进对齐）
+            if translation:
+                if notes:
+                    lines.append(f"{indent_spaces}'{translation}' ({notes})")
+                else:
+                    lines.append(f"{indent_spaces}'{translation}'")
+            elif notes:
+                lines.append(f"{indent_spaces}({notes})")
         
         return '\n'.join(lines)
     
