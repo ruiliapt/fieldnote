@@ -176,6 +176,7 @@ class MainWindow(QMainWindow):
             ["ID", "例句编号", "原文", "原文(汉字)", "词汇分解", "词汇分解(汉字)", "翻译", "翻译(汉字)", "备注"]
         )
         self.data_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.data_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)  # 支持多选
         self.data_table.cellClicked.connect(self.load_entry_to_form)
         list_layout.addWidget(self.data_table)
         
@@ -184,6 +185,52 @@ class MainWindow(QMainWindow):
         list_layout.addWidget(self.stats_label)
         
         right_layout.addWidget(list_group)
+        
+        # ===== 导出控制区域 =====
+        export_group = QGroupBox("快速导出")
+        export_layout = QVBoxLayout()
+        export_group.setLayout(export_layout)
+        
+        # 导出选项
+        options_layout = QHBoxLayout()
+        
+        self.data_show_numbering = QCheckBox("显示编号")
+        self.data_show_numbering.setChecked(True)
+        options_layout.addWidget(self.data_show_numbering)
+        
+        self.data_include_chinese = QCheckBox("包含汉字")
+        self.data_include_chinese.setChecked(False)
+        options_layout.addWidget(self.data_include_chinese)
+        
+        options_layout.addStretch()
+        export_layout.addLayout(options_layout)
+        
+        # 导出按钮
+        export_buttons_layout = QHBoxLayout()
+        
+        export_text_btn = QPushButton("生成文本")
+        export_text_btn.setToolTip("将选中的语料生成对齐文本")
+        export_text_btn.clicked.connect(self.quick_export_text)
+        export_buttons_layout.addWidget(export_text_btn)
+        
+        export_word_btn = QPushButton("导出Word")
+        export_word_btn.setToolTip("将选中的语料导出到Word文档")
+        export_word_btn.clicked.connect(self.quick_export_word)
+        export_buttons_layout.addWidget(export_word_btn)
+        
+        export_all_text_btn = QPushButton("全部文本")
+        export_all_text_btn.setToolTip("将所有语料生成对齐文本")
+        export_all_text_btn.clicked.connect(self.quick_export_all_text)
+        export_buttons_layout.addWidget(export_all_text_btn)
+        
+        export_all_word_btn = QPushButton("全部Word")
+        export_all_word_btn.setToolTip("将所有语料导出到Word文档")
+        export_all_word_btn.clicked.connect(self.quick_export_all_word)
+        export_buttons_layout.addWidget(export_all_word_btn)
+        
+        export_layout.addLayout(export_buttons_layout)
+        
+        right_layout.addWidget(export_group)
         
         # 将左右两侧添加到主布局
         main_layout.addWidget(left_widget)
@@ -804,6 +851,197 @@ class MainWindow(QMainWindow):
                 
         except Exception as e:
             QMessageBox.critical(self, "导出失败", f"错误: {str(e)}")
+    
+    def _get_selected_entries(self):
+        """获取选中的语料"""
+        selected_rows = self.data_table.selectionModel().selectedRows()
+        if not selected_rows:
+            return []
+        
+        entries = []
+        for index in selected_rows:
+            row = index.row()
+            entry_id = int(self.data_table.item(row, 0).text())
+            entry = self.db.get_entry(entry_id)
+            if entry:
+                entries.append(entry)
+        return entries
+    
+    def quick_export_text(self):
+        """快速导出选中语料为文本"""
+        entries = self._get_selected_entries()
+        if not entries:
+            QMessageBox.warning(self, "提示", "请先选择要导出的语料！\n\n提示：按住Ctrl或Shift可多选")
+            return
+        
+        show_numbering = self.data_show_numbering.isChecked()
+        include_chinese = self.data_include_chinese.isChecked()
+        
+        formatted_text = TextFormatter.format_entries(entries, show_numbering, 
+                                                     include_chinese=include_chinese)
+        
+        # 显示在对话框中
+        dialog = QDialog(self)
+        dialog.setWindowTitle(f"导出文本 ({len(entries)} 条)")
+        dialog.setMinimumSize(800, 600)
+        
+        layout = QVBoxLayout()
+        dialog.setLayout(layout)
+        
+        text_edit = QTextEdit()
+        text_edit.setPlainText(formatted_text)
+        text_edit.setReadOnly(True)
+        for font_name in ["Consolas", "Monaco", "Menlo", "DejaVu Sans Mono", "Courier New", "monospace"]:
+            font = QFont(font_name, 11)
+            font.setStyleHint(QFont.StyleHint.Monospace)
+            font.setFixedPitch(True)
+            text_edit.setFont(font)
+            if QFont(font_name).exactMatch():
+                break
+        layout.addWidget(text_edit)
+        
+        button_layout = QHBoxLayout()
+        copy_btn = QPushButton("复制到剪贴板")
+        copy_btn.clicked.connect(lambda: self._copy_to_clipboard(formatted_text, dialog))
+        button_layout.addWidget(copy_btn)
+        
+        close_btn = QPushButton("关闭")
+        close_btn.clicked.connect(dialog.close)
+        button_layout.addWidget(close_btn)
+        
+        layout.addLayout(button_layout)
+        dialog.exec()
+    
+    def quick_export_word(self):
+        """快速导出选中语料到Word"""
+        entries = self._get_selected_entries()
+        if not entries:
+            QMessageBox.warning(self, "提示", "请先选择要导出的语料！\n\n提示：按住Ctrl或Shift可多选")
+            return
+        
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "保存Word文档", "", "Word Documents (*.docx)"
+        )
+        
+        if not file_path:
+            return
+        
+        show_numbering = self.data_show_numbering.isChecked()
+        include_chinese = self.data_include_chinese.isChecked()
+        
+        try:
+            success = self.exporter.export(
+                entries, file_path,
+                table_width=5.0,
+                font_size=10,
+                line_spacing=1.15,
+                show_numbering=show_numbering,
+                entries_per_page=10,
+                include_chinese=include_chinese
+            )
+            
+            if success:
+                QMessageBox.information(
+                    self, "导出成功", 
+                    f"成功导出 {len(entries)} 条语料到:\n{file_path}"
+                )
+                self.statusBar().showMessage(f"导出成功: {len(entries)} 条", 3000)
+            else:
+                QMessageBox.critical(self, "导出失败", "导出过程中发生错误！")
+        except Exception as e:
+            QMessageBox.critical(self, "导出失败", f"错误: {str(e)}")
+    
+    def quick_export_all_text(self):
+        """快速导出所有语料为文本"""
+        entries = self.db.get_all_entries()
+        if not entries:
+            QMessageBox.warning(self, "提示", "没有可导出的语料！")
+            return
+        
+        show_numbering = self.data_show_numbering.isChecked()
+        include_chinese = self.data_include_chinese.isChecked()
+        
+        formatted_text = TextFormatter.format_entries(entries, show_numbering, 
+                                                     include_chinese=include_chinese)
+        
+        # 显示在对话框中
+        dialog = QDialog(self)
+        dialog.setWindowTitle(f"导出文本 (全部 {len(entries)} 条)")
+        dialog.setMinimumSize(800, 600)
+        
+        layout = QVBoxLayout()
+        dialog.setLayout(layout)
+        
+        text_edit = QTextEdit()
+        text_edit.setPlainText(formatted_text)
+        text_edit.setReadOnly(True)
+        for font_name in ["Consolas", "Monaco", "Menlo", "DejaVu Sans Mono", "Courier New", "monospace"]:
+            font = QFont(font_name, 11)
+            font.setStyleHint(QFont.StyleHint.Monospace)
+            font.setFixedPitch(True)
+            text_edit.setFont(font)
+            if QFont(font_name).exactMatch():
+                break
+        layout.addWidget(text_edit)
+        
+        button_layout = QHBoxLayout()
+        copy_btn = QPushButton("复制到剪贴板")
+        copy_btn.clicked.connect(lambda: self._copy_to_clipboard(formatted_text, dialog))
+        button_layout.addWidget(copy_btn)
+        
+        close_btn = QPushButton("关闭")
+        close_btn.clicked.connect(dialog.close)
+        button_layout.addWidget(close_btn)
+        
+        layout.addLayout(button_layout)
+        dialog.exec()
+    
+    def quick_export_all_word(self):
+        """快速导出所有语料到Word"""
+        entries = self.db.get_all_entries()
+        if not entries:
+            QMessageBox.warning(self, "提示", "没有可导出的语料！")
+            return
+        
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "保存Word文档", "", "Word Documents (*.docx)"
+        )
+        
+        if not file_path:
+            return
+        
+        show_numbering = self.data_show_numbering.isChecked()
+        include_chinese = self.data_include_chinese.isChecked()
+        
+        try:
+            success = self.exporter.export(
+                entries, file_path,
+                table_width=5.0,
+                font_size=10,
+                line_spacing=1.15,
+                show_numbering=show_numbering,
+                entries_per_page=10,
+                include_chinese=include_chinese
+            )
+            
+            if success:
+                QMessageBox.information(
+                    self, "导出成功", 
+                    f"成功导出 {len(entries)} 条语料到:\n{file_path}"
+                )
+                self.statusBar().showMessage(f"导出成功: {len(entries)} 条", 3000)
+            else:
+                QMessageBox.critical(self, "导出失败", "导出过程中发生错误！")
+        except Exception as e:
+            QMessageBox.critical(self, "导出失败", f"错误: {str(e)}")
+    
+    def _copy_to_clipboard(self, text, dialog=None):
+        """复制文本到剪贴板"""
+        clipboard = QApplication.clipboard()
+        clipboard.setText(text)
+        QMessageBox.information(self, "复制成功", "文本已复制到剪贴板！")
+        if dialog:
+            dialog.close()
     
     def closeEvent(self, event):
         """关闭事件处理"""
