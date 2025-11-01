@@ -61,7 +61,11 @@ if [ -d "dist/Fieldnote" ]; then
     fi
     echo ""
     echo "创建分发包："
-    echo "  cd dist && tar -czf Fieldnote-$(uname -s)-$(uname -m).tar.gz Fieldnote/"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "  cd dist && tar -czf Fieldnote-macOS.tar.gz Fieldnote.app"
+    else
+        echo "  cd dist && tar -czf Fieldnote-$(uname -s)-$(uname -m).tar.gz Fieldnote/"
+    fi
 else
     echo ""
     echo "构建失败！请检查错误信息。"
