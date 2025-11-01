@@ -27,7 +27,11 @@ class MainWindow(QMainWindow):
         self.exporter = WordExporter()
         self.current_entry_id = None
         
+        # 加载字体配置
+        self.font_config = self.load_font_config()
+        
         self.init_ui()
+        self.apply_fonts()  # 应用字体
         self.refresh_table()
     
     def init_ui(self):
@@ -504,6 +508,14 @@ class MainWindow(QMainWindow):
         quit_action.setShortcut("Ctrl+Q")
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
+        
+        # 设置菜单
+        settings_menu = menubar.addMenu("设置")
+        
+        # 字体设置
+        font_settings_action = QAction("字体设置...", self)
+        font_settings_action.triggered.connect(self.open_font_settings)
+        settings_menu.addAction(font_settings_action)
     
     def update_status_bar(self):
         """更新状态栏显示当前数据库"""
@@ -1043,8 +1055,259 @@ class MainWindow(QMainWindow):
         if dialog:
             dialog.close()
     
+    def load_font_config(self):
+        """加载字体配置"""
+        config_path = os.path.join(os.path.expanduser("~"), ".fieldnote", "font_config.json")
+        default_config = {
+            "source_text": "Doulos SIL Compact",
+            "source_text_size": 12,
+            "gloss": "Charis SIL Compact",
+            "gloss_size": 11,
+            "translation": "系统默认",
+            "translation_size": 11,
+            "chinese": "系统默认",
+            "chinese_size": 10
+        }
+        
+        try:
+            if os.path.exists(config_path):
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                    # 合并默认配置，确保所有键都存在
+                    for key, value in default_config.items():
+                        if key not in config:
+                            config[key] = value
+                    return config
+        except Exception as e:
+            print(f"加载字体配置失败: {e}")
+        
+        return default_config
+    
+    def save_font_config(self):
+        """保存字体配置"""
+        config_path = os.path.join(os.path.expanduser("~"), ".fieldnote", "font_config.json")
+        try:
+            os.makedirs(os.path.dirname(config_path), exist_ok=True)
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(self.font_config, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            QMessageBox.warning(self, "警告", f"保存字体配置失败: {str(e)}")
+    
+    def apply_fonts(self):
+        """应用字体设置到输入框"""
+        # 原文字体
+        source_font = self.font_config.get("source_text", "Doulos SIL Compact")
+        source_size = self.font_config.get("source_text_size", 12)
+        if source_font != "系统默认":
+            self.source_text_input.setFont(QFont(source_font, source_size))
+        
+        # 词汇分解字体
+        gloss_font = self.font_config.get("gloss", "Charis SIL Compact")
+        gloss_size = self.font_config.get("gloss_size", 11)
+        if gloss_font != "系统默认":
+            self.gloss_input.setFont(QFont(gloss_font, gloss_size))
+        
+        # 翻译字体
+        translation_font = self.font_config.get("translation", "系统默认")
+        translation_size = self.font_config.get("translation_size", 11)
+        if translation_font != "系统默认":
+            self.translation_input.setFont(QFont(translation_font, translation_size))
+        
+        # 汉字字段字体
+        chinese_font = self.font_config.get("chinese", "系统默认")
+        chinese_size = self.font_config.get("chinese_size", 10)
+        if chinese_font != "系统默认":
+            self.source_text_cn_input.setFont(QFont(chinese_font, chinese_size))
+            self.gloss_cn_input.setFont(QFont(chinese_font, chinese_size))
+            self.translation_cn_input.setFont(QFont(chinese_font, chinese_size))
+    
+    def open_font_settings(self):
+        """打开字体设置对话框"""
+        dialog = FontSettingsDialog(self, self.font_config)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            self.font_config = dialog.get_config()
+            self.save_font_config()
+            self.apply_fonts()
+            QMessageBox.information(self, "成功", "字体设置已应用！")
+    
     def closeEvent(self, event):
         """关闭事件处理"""
         self.db.close()
         event.accept()
+
+
+class FontSettingsDialog(QDialog):
+    """字体设置对话框"""
+    
+    def __init__(self, parent, current_config):
+        super().__init__(parent)
+        self.current_config = current_config.copy()
+        self.init_ui()
+    
+    def init_ui(self):
+        """初始化UI"""
+        self.setWindowTitle("字体设置")
+        self.setMinimumWidth(500)
+        
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        
+        # 说明文本
+        info_label = QLabel(
+            "为不同字段设置专用字体（如Doulos SIL Compact用于IPA符号）\n"
+            "字体必须已安装在系统中才能生效"
+        )
+        info_label.setWordWrap(True)
+        layout.addWidget(info_label)
+        
+        layout.addSpacing(10)
+        
+        # 字体设置表单
+        form_layout = QFormLayout()
+        
+        # 原文字段
+        source_layout = QHBoxLayout()
+        self.source_font_combo = self.create_font_combo()
+        self.source_font_combo.setCurrentText(self.current_config.get("source_text", "Doulos SIL Compact"))
+        self.source_size_spin = QSpinBox()
+        self.source_size_spin.setRange(8, 24)
+        self.source_size_spin.setValue(self.current_config.get("source_text_size", 12))
+        source_layout.addWidget(self.source_font_combo, 3)
+        source_layout.addWidget(QLabel("大小:"))
+        source_layout.addWidget(self.source_size_spin, 1)
+        form_layout.addRow("原文字体:", source_layout)
+        
+        # 词汇分解字段
+        gloss_layout = QHBoxLayout()
+        self.gloss_font_combo = self.create_font_combo()
+        self.gloss_font_combo.setCurrentText(self.current_config.get("gloss", "Charis SIL Compact"))
+        self.gloss_size_spin = QSpinBox()
+        self.gloss_size_spin.setRange(8, 24)
+        self.gloss_size_spin.setValue(self.current_config.get("gloss_size", 11))
+        gloss_layout.addWidget(self.gloss_font_combo, 3)
+        gloss_layout.addWidget(QLabel("大小:"))
+        gloss_layout.addWidget(self.gloss_size_spin, 1)
+        form_layout.addRow("词汇分解字体:", gloss_layout)
+        
+        # 翻译字段
+        translation_layout = QHBoxLayout()
+        self.translation_font_combo = self.create_font_combo()
+        self.translation_font_combo.setCurrentText(self.current_config.get("translation", "系统默认"))
+        self.translation_size_spin = QSpinBox()
+        self.translation_size_spin.setRange(8, 24)
+        self.translation_size_spin.setValue(self.current_config.get("translation_size", 11))
+        translation_layout.addWidget(self.translation_font_combo, 3)
+        translation_layout.addWidget(QLabel("大小:"))
+        translation_layout.addWidget(self.translation_size_spin, 1)
+        form_layout.addRow("翻译字体:", translation_layout)
+        
+        # 汉字字段
+        chinese_layout = QHBoxLayout()
+        self.chinese_font_combo = self.create_font_combo()
+        self.chinese_font_combo.setCurrentText(self.current_config.get("chinese", "系统默认"))
+        self.chinese_size_spin = QSpinBox()
+        self.chinese_size_spin.setRange(8, 24)
+        self.chinese_size_spin.setValue(self.current_config.get("chinese_size", 10))
+        chinese_layout.addWidget(self.chinese_font_combo, 3)
+        chinese_layout.addWidget(QLabel("大小:"))
+        chinese_layout.addWidget(self.chinese_size_spin, 1)
+        form_layout.addRow("汉字字体:", chinese_layout)
+        
+        layout.addLayout(form_layout)
+        
+        layout.addSpacing(10)
+        
+        # 预览区域
+        preview_group = QGroupBox("预览")
+        preview_layout = QVBoxLayout()
+        preview_group.setLayout(preview_layout)
+        
+        self.preview_label = QLabel("The quick brown fox jumps over the lazy dog\nɑ ɔ ə ʃ ʒ θ ð ŋ 测试汉字")
+        self.preview_label.setWordWrap(True)
+        preview_layout.addWidget(self.preview_label)
+        
+        preview_btn = QPushButton("预览当前设置")
+        preview_btn.clicked.connect(self.update_preview)
+        preview_layout.addWidget(preview_btn)
+        
+        layout.addWidget(preview_group)
+        
+        layout.addSpacing(10)
+        
+        # 按钮
+        button_layout = QHBoxLayout()
+        
+        reset_btn = QPushButton("恢复默认")
+        reset_btn.clicked.connect(self.reset_to_default)
+        button_layout.addWidget(reset_btn)
+        
+        button_layout.addStretch()
+        
+        ok_btn = QPushButton("确定")
+        ok_btn.clicked.connect(self.accept)
+        button_layout.addWidget(ok_btn)
+        
+        cancel_btn = QPushButton("取消")
+        cancel_btn.clicked.connect(self.reject)
+        button_layout.addWidget(cancel_btn)
+        
+        layout.addLayout(button_layout)
+    
+    def create_font_combo(self):
+        """创建字体选择下拉框"""
+        combo = QComboBox()
+        combo.setEditable(True)  # 允许输入自定义字体名
+        
+        # 添加常用语言学字体
+        fonts = [
+            "系统默认",
+            "Doulos SIL Compact",
+            "Doulos SIL",
+            "Charis SIL Compact",
+            "Charis SIL",
+            "Gentium Plus",
+            "Gentium Basic",
+            "DejaVu Sans",
+            "Arial Unicode MS",
+            "Lucida Sans Unicode",
+            "Times New Roman",
+            "Courier New"
+        ]
+        
+        combo.addItems(fonts)
+        return combo
+    
+    def update_preview(self):
+        """更新预览"""
+        font_name = self.source_font_combo.currentText()
+        font_size = self.source_size_spin.value()
+        
+        if font_name != "系统默认":
+            self.preview_label.setFont(QFont(font_name, font_size))
+        else:
+            self.preview_label.setFont(QFont())
+    
+    def reset_to_default(self):
+        """恢复默认设置"""
+        self.source_font_combo.setCurrentText("Doulos SIL Compact")
+        self.source_size_spin.setValue(12)
+        self.gloss_font_combo.setCurrentText("Charis SIL Compact")
+        self.gloss_size_spin.setValue(11)
+        self.translation_font_combo.setCurrentText("系统默认")
+        self.translation_size_spin.setValue(11)
+        self.chinese_font_combo.setCurrentText("系统默认")
+        self.chinese_size_spin.setValue(10)
+    
+    def get_config(self):
+        """获取配置"""
+        return {
+            "source_text": self.source_font_combo.currentText(),
+            "source_text_size": self.source_size_spin.value(),
+            "gloss": self.gloss_font_combo.currentText(),
+            "gloss_size": self.gloss_size_spin.value(),
+            "translation": self.translation_font_combo.currentText(),
+            "translation_size": self.translation_size_spin.value(),
+            "chinese": self.chinese_font_combo.currentText(),
+            "chinese_size": self.chinese_size_spin.value()
+        }
 
