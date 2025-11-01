@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
         
         self.init_ui()
         self.apply_fonts()  # 应用字体
+        self.setup_global_shortcuts()  # 设置全局快捷键
         self.refresh_table()
     
     def init_ui(self):
@@ -1137,29 +1138,30 @@ class MainWindow(QMainWindow):
             self.apply_fonts()
             QMessageBox.information(self, "成功", "字体设置已应用！")
     
+    def setup_global_shortcuts(self):
+        """设置全局快捷键（绑定到主窗口）"""
+        # 转为大写
+        shortcut_upper = QShortcut(QKeySequence("Ctrl+Shift+U"), self)
+        shortcut_upper.activated.connect(lambda: self.transform_focused_text('upper'))
+        
+        # 转为小写
+        shortcut_lower = QShortcut(QKeySequence("Ctrl+Shift+L"), self)
+        shortcut_lower.activated.connect(lambda: self.transform_focused_text('lower'))
+        
+        # 首字母大写
+        shortcut_title = QShortcut(QKeySequence("Ctrl+Shift+T"), self)
+        shortcut_title.activated.connect(lambda: self.transform_focused_text('title'))
+        
+        # 小型大写
+        shortcut_small_caps = QShortcut(QKeySequence("Ctrl+Shift+C"), self)
+        shortcut_small_caps.activated.connect(lambda: self.transform_focused_text('small_caps'))
+    
     def setup_text_edit_context_menu(self, text_edit):
-        """为文本编辑框设置右键菜单和快捷键"""
+        """为文本编辑框设置右键菜单"""
         text_edit.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         text_edit.customContextMenuRequested.connect(
             lambda pos: self.show_text_edit_context_menu(text_edit, pos)
         )
-        
-        # 为文本框注册快捷键
-        # 转为大写
-        shortcut_upper = QShortcut(QKeySequence("Ctrl+Shift+U"), text_edit)
-        shortcut_upper.activated.connect(lambda: self.transform_selected_text(text_edit, 'upper'))
-        
-        # 转为小写
-        shortcut_lower = QShortcut(QKeySequence("Ctrl+Shift+L"), text_edit)
-        shortcut_lower.activated.connect(lambda: self.transform_selected_text(text_edit, 'lower'))
-        
-        # 首字母大写
-        shortcut_title = QShortcut(QKeySequence("Ctrl+Shift+T"), text_edit)
-        shortcut_title.activated.connect(lambda: self.transform_selected_text(text_edit, 'title'))
-        
-        # 小型大写
-        shortcut_small_caps = QShortcut(QKeySequence("Ctrl+Shift+C"), text_edit)
-        shortcut_small_caps.activated.connect(lambda: self.transform_selected_text(text_edit, 'small_caps'))
     
     def show_text_edit_context_menu(self, text_edit, pos):
         """显示文本编辑框的右键菜单"""
@@ -1194,6 +1196,15 @@ class MainWindow(QMainWindow):
             menu.addAction(small_caps_action)
         
         menu.exec(text_edit.mapToGlobal(pos))
+    
+    def transform_focused_text(self, transform_type):
+        """转换当前焦点输入框中选中的文本"""
+        # 获取当前焦点widget
+        focused_widget = QApplication.focusWidget()
+        
+        # 检查是否是 QTextEdit
+        if isinstance(focused_widget, QTextEdit):
+            self.transform_selected_text(focused_widget, transform_type)
     
     def transform_selected_text(self, text_edit, transform_type):
         """转换选中的文本"""
