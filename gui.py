@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import (
     QDoubleSpinBox, QCheckBox, QComboBox, QTabWidget, QGroupBox, QApplication
 )
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont, QAction
+from PyQt6.QtGui import QFont, QAction, QShortcut, QKeySequence
 
 from database import CorpusDatabase
 from exporter import WordExporter, TextFormatter
@@ -1138,11 +1138,28 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "成功", "字体设置已应用！")
     
     def setup_text_edit_context_menu(self, text_edit):
-        """为文本编辑框设置右键菜单"""
+        """为文本编辑框设置右键菜单和快捷键"""
         text_edit.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         text_edit.customContextMenuRequested.connect(
             lambda pos: self.show_text_edit_context_menu(text_edit, pos)
         )
+        
+        # 为文本框注册快捷键
+        # 转为大写
+        shortcut_upper = QShortcut(QKeySequence("Ctrl+Shift+U"), text_edit)
+        shortcut_upper.activated.connect(lambda: self.transform_selected_text(text_edit, 'upper'))
+        
+        # 转为小写
+        shortcut_lower = QShortcut(QKeySequence("Ctrl+Shift+L"), text_edit)
+        shortcut_lower.activated.connect(lambda: self.transform_selected_text(text_edit, 'lower'))
+        
+        # 首字母大写
+        shortcut_title = QShortcut(QKeySequence("Ctrl+Shift+T"), text_edit)
+        shortcut_title.activated.connect(lambda: self.transform_selected_text(text_edit, 'title'))
+        
+        # 小型大写
+        shortcut_small_caps = QShortcut(QKeySequence("Ctrl+Shift+C"), text_edit)
+        shortcut_small_caps.activated.connect(lambda: self.transform_selected_text(text_edit, 'small_caps'))
     
     def show_text_edit_context_menu(self, text_edit, pos):
         """显示文本编辑框的右键菜单"""
@@ -1152,27 +1169,27 @@ class MainWindow(QMainWindow):
         if text_edit.textCursor().hasSelection():
             menu.addSeparator()
             
+            # 检测操作系统，显示正确的快捷键提示
+            import platform
+            modifier_key = "Cmd" if platform.system() == "Darwin" else "Ctrl"
+            
             # 全部大写（用于语法标签，如 NOM, ACC, PST）
-            upper_action = QAction("转为大写 (NOM)", self)
-            upper_action.setShortcut("Ctrl+Shift+U")
+            upper_action = QAction(f"转为大写 (NOM)\t{modifier_key}+Shift+U", self)
             upper_action.triggered.connect(lambda: self.transform_selected_text(text_edit, 'upper'))
             menu.addAction(upper_action)
             
             # 全部小写
-            lower_action = QAction("转为小写 (nom)", self)
-            lower_action.setShortcut("Ctrl+Shift+L")
+            lower_action = QAction(f"转为小写 (nom)\t{modifier_key}+Shift+L", self)
             lower_action.triggered.connect(lambda: self.transform_selected_text(text_edit, 'lower'))
             menu.addAction(lower_action)
             
             # 首字母大写
-            title_action = QAction("首字母大写 (Nom)", self)
-            title_action.setShortcut("Ctrl+Shift+T")
+            title_action = QAction(f"首字母大写 (Nom)\t{modifier_key}+Shift+T", self)
             title_action.triggered.connect(lambda: self.transform_selected_text(text_edit, 'title'))
             menu.addAction(title_action)
             
             # 小型大写（转为Unicode小型大写字母）
-            small_caps_action = QAction("小型大写 (ɴᴏᴍ)", self)
-            small_caps_action.setShortcut("Ctrl+Shift+C")
+            small_caps_action = QAction(f"小型大写 (ɴᴏᴍ)\t{modifier_key}+Shift+C", self)
             small_caps_action.triggered.connect(lambda: self.transform_selected_text(text_edit, 'small_caps'))
             menu.addAction(small_caps_action)
         
