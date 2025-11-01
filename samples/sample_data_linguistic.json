@@ -1,0 +1,38 @@
+[
+  {
+    "example_id": "10",
+    "source_text": "ŋo³³ a²¹ ta⁵⁵ je²¹-xu⁵⁵ xa³³ kʰu²¹ tɕie⁵⁵ ja²¹/kua³³.",
+    "gloss": "1.SG also with 3.SG-PL say several CLF EXP",
+    "translation": "I've talked with them a little.",
+    "notes": "The drowning persons, text; kua³³: Elicitation"
+  },
+  {
+    "example_id": "1",
+    "source_text": "ŋa˧ tə˥ tɕʰi˥ fan˨˩",
+    "gloss": "1SG CLF eat rice",
+    "translation": "我吃饭",
+    "notes": "日常用语示例"
+  },
+  {
+    "example_id": "2",
+    "source_text": "ni˧ kʰɤ˥ na˧ li˥ kʰə˧",
+    "gloss": "2SG go where Q",
+    "translation": "你去哪里？",
+    "notes": "疑问句"
+  },
+  {
+    "example_id": "3",
+    "source_text": "今天 天气 很 好",
+    "gloss": "today weather very good",
+    "translation": "今天天气很好",
+    "notes": ""
+  },
+  {
+    "example_id": "CJ001",
+    "source_text": "我 昨天 去 了 北京",
+    "gloss": "1SG yesterday go PERF Beijing",
+    "translation": "我昨天去了北京",
+    "notes": "完成体标记"
+  }
+]
+

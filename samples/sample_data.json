@@ -1,0 +1,38 @@
+[
+  {
+    "example_id": "CJ001",
+    "source_text": "ŋa˧ tə˥ tɕʰi˥ fan˨˩",
+    "gloss": "1SG CLF eat rice",
+    "translation": "我吃饭",
+    "notes": "日常用语示例"
+  },
+  {
+    "example_id": "CJ002",
+    "source_text": "ni˧ kʰɤ˥ na˧ li˥ kʰə˧",
+    "gloss": "2SG go where Q",
+    "translation": "你去哪里？",
+    "notes": "疑问句示例"
+  },
+  {
+    "example_id": "CJ003",
+    "source_text": "ta˧ xɤ˥ ʂu˧ təʊ˥ tʰai˥",
+    "gloss": "3SG NEG know how say",
+    "translation": "他不知道怎么说",
+    "notes": "否定句示例"
+  },
+  {
+    "example_id": "CJ004",
+    "source_text": "ŋa˧ ti˥ mei˧ ʈʂʰan˥ li˧",
+    "gloss": "1SG PROG buy vegetable PART",
+    "translation": "我正在买菜呢",
+    "notes": "进行体标记示例"
+  },
+  {
+    "example_id": "CJ005",
+    "source_text": "tɕin˥ tjan˥ tjan˥ tɕi˥ ʐə˧ xau˧",
+    "gloss": "today weather very good",
+    "translation": "今天天气很好",
+    "notes": "形容词谓语句"
+  }
+]
+

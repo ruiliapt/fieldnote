@@ -1,0 +1,98 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PIPFILE.lock
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+corpus.db
+
+# Logs
+*.log
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Documentation builds
+docs/_build/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Lock files
+*.lock
+poetry.lock
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Build outputs
+*.app
+*.exe
+*.dmg
+*.AppImage
+
+# Test files (keep sample data)
+test_*.docx

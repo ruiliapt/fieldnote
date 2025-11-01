@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "fieldnote"
+version = "0.1.0"
+description = "田野笔记管理工具 - A lightweight fieldnote management tool for linguistic fieldwork"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT"
+readme = "README.md"
+keywords = ["linguistics", "fieldwork", "fieldnotes", "corpus", "IPA", "language-documentation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Text Processing :: Linguistic",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+PyQt6 = "^6.6.1"
+python-docx = "^1.1.0"
+pandas = "^2.2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+black = "^23.12.0"
+flake8 = "^6.1.0"
+pyinstaller = "^6.16.0"
+
+[tool.poetry.scripts]
+fieldnote = "main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
