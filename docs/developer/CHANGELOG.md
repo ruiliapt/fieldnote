@@ -6,6 +6,24 @@
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-11-01
+
+### Fixed
+- **关键修复**: 解决 macOS 上启动立即崩溃的问题
+  - 修复 QtCore 无法找到插件路径导致的 SIGSEGV 崩溃
+  - 在导入 PyQt6 之前设置必要的环境变量
+  - 添加 `--copy-metadata` 确保 Qt 元数据被正确打包
+- 改进 PyInstaller 构建配置
+
+### Added
+- 崩溃诊断工具 (`scripts/debug_crash.sh`)
+- 修复版构建脚本 (`scripts/build_executable_fixed.sh`)
+- 完整的故障排除文档 (`docs/TROUBLESHOOTING.md`)
+  - 8个常见问题的详细解决方案
+  - macOS 安全提示处理
+  - 路径和字体问题说明
+- Qt 路径配置辅助模块 (`qt_conf_fix.py`)
+
 ### Changed
 - 项目名称从 lite-corpus-manager 更新为 fieldnote
 - 优化句号处理：原文末尾的单独句号自动合并到最后一个词
