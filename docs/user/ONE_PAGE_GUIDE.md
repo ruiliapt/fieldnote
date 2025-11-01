@@ -1,4 +1,4 @@
-# Fieldnote Lite - 一页纸快速指南
+# Fieldnotes Lite - 一页纸快速指南
 
 **🎯 目标用户**：没有编程经验的语言学研究者
 
@@ -12,9 +12,9 @@
 
 1. 访问：https://github.com/yourusername/fieldnote/releases
 2. 下载对应版本：
-   - Windows：`Fieldnote-Setup.exe`
-   - Mac：`Fieldnote.dmg`
-   - Linux：`Fieldnote-linux.tar.gz`
+   - Windows：`Fieldnotes-Setup.exe`
+   - Mac：`Fieldnotes.dmg`
+   - Linux：`Fieldnotes-linux.tar.gz`
 3. 双击安装，完成！
 
 ### 方法 2：找同事要安装包
@@ -98,5 +98,5 @@
 
 ---
 
-**就这么简单！开始使用 Fieldnote Lite 管理您的语料吧！** 🎓
+**就这么简单！开始使用 Fieldnotes Lite 管理您的语料吧！** 🎓
 

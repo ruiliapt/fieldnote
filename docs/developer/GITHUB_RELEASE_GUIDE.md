@@ -1,13 +1,13 @@
 # GitHub Release 发布指南
 
 **创建日期**: 2025-11-01  
-**适用版本**: Fieldnote Lite v0.1.0+
+**适用版本**: Fieldnotes Lite v0.1.0+
 
 ---
 
 ## 🎯 概述
 
-本指南说明如何在 GitHub 上发布 Fieldnote Lite 的可执行版本。
+本指南说明如何在 GitHub 上发布 Fieldnotes Lite 的可执行版本。
 
 ---
 
@@ -37,7 +37,7 @@ git push origin v0.1.0
 # 3. 创建 Release（需要 GitHub CLI）
 gh release create v0.1.0 \
     release-v0.1.0/*.zip \
-    --title "Fieldnote Lite v0.1.0" \
+    --title "Fieldnotes Lite v0.1.0" \
     --notes-file release-v0.1.0/RELEASE_NOTES.md
 ```
 
@@ -55,7 +55,7 @@ gh release create v0.1.0 \
 
 # 打包为 ZIP
 cd dist
-zip -r Fieldnote-v0.1.0-macOS.zip Fieldnote.app
+zip -r Fieldnotes-v0.1.0-macOS.zip Fieldnotes.app
 cd ..
 ```
 
@@ -67,7 +67,7 @@ scripts\build_executable.bat
 
 :: 打包为 ZIP
 cd dist
-tar -a -c -f Fieldnote-v0.1.0-Windows.zip Fieldnote
+tar -a -c -f Fieldnotes-v0.1.0-Windows.zip Fieldnotes
 cd ..
 ```
 
@@ -79,7 +79,7 @@ cd ..
 
 # 打包
 cd dist
-tar -czf Fieldnote-v0.1.0-Linux.tar.gz Fieldnote/
+tar -czf Fieldnotes-v0.1.0-Linux.tar.gz Fieldnotes/
 cd ..
 ```
 
@@ -115,15 +115,15 @@ gh auth login
 
 # 创建 Release
 gh release create v0.1.0 \
-    release-v0.1.0/Fieldnote-v0.1.0-macOS.zip \
+    release-v0.1.0/Fieldnotes-v0.1.0-macOS.zip \
     release-v0.1.0/Source-Code-v0.1.0.zip \
-    --title "Fieldnote Lite v0.1.0" \
+    --title "Fieldnotes Lite v0.1.0" \
     --notes-file release-v0.1.0/RELEASE_NOTES.md
 
 # 可选：添加更多文件
 gh release upload v0.1.0 \
-    release-v0.1.0/Fieldnote-v0.1.0-Windows.zip \
-    release-v0.1.0/Fieldnote-v0.1.0-Linux.tar.gz
+    release-v0.1.0/Fieldnotes-v0.1.0-Windows.zip \
+    release-v0.1.0/Fieldnotes-v0.1.0-Linux.tar.gz
 ```
 
 #### 方法 B: 使用 GitHub 网页
@@ -136,7 +136,7 @@ gh release upload v0.1.0 \
 2. **填写信息**
    - **Tag**: 选择或输入 `v0.1.0`
    - **Target**: `main` 分支
-   - **Title**: `Fieldnote Lite v0.1.0`
+   - **Title**: `Fieldnotes Lite v0.1.0`
    - **Description**: 复制 `release-v0.1.0/RELEASE_NOTES.md` 的内容
 
 3. **上传文件**
@@ -152,7 +152,7 @@ gh release upload v0.1.0 \
 ## 📄 Release Notes 模板
 
 ```markdown
-# Fieldnote Lite v0.1.0
+# Fieldnotes Lite v0.1.0
 
 ## 🎉 首次发布！
 
@@ -166,16 +166,16 @@ gh release upload v0.1.0 \
 ### 📥 下载
 
 #### macOS
-- 下载 `Fieldnote-v0.1.0-macOS.zip`
-- 解压并双击 `Fieldnote.app`
+- 下载 `Fieldnotes-v0.1.0-macOS.zip`
+- 解压并双击 `Fieldnotes.app`
 
 #### Windows
-- 下载 `Fieldnote-v0.1.0-Windows.zip`
-- 解压并运行 `Fieldnote.exe`
+- 下载 `Fieldnotes-v0.1.0-Windows.zip`
+- 解压并运行 `Fieldnotes.exe`
 
 #### Linux
-- 下载 `Fieldnote-v0.1.0-Linux.tar.gz`
-- 解压并运行 `./Fieldnote/Fieldnote`
+- 下载 `Fieldnotes-v0.1.0-Linux.tar.gz`
+- 解压并运行 `./Fieldnotes/Fieldnotes`
 
 ### 📖 文档
 
@@ -215,10 +215,10 @@ md5 release-v0.1.0/*.zip > MD5SUMS.txt
 ```bash
 # 签名
 codesign --force --deep --sign "Developer ID Application: Your Name" \
-    dist/Fieldnote.app
+    dist/Fieldnotes.app
 
 # 公证（notarization）
-xcrun notarytool submit dist/Fieldnote.zip \
+xcrun notarytool submit dist/Fieldnotes.zip \
     --apple-id your@email.com \
     --team-id TEAMID \
     --password app-specific-password
@@ -300,12 +300,12 @@ release-0.1.0
 ### 4. 文件命名
 
 ```
-Fieldnote-v{版本号}-{平台}.{格式}
+Fieldnotes-v{版本号}-{平台}.{格式}
 
 示例：
-Fieldnote-v0.1.0-macOS.zip
-Fieldnote-v0.1.0-Windows.zip
-Fieldnote-v0.1.0-Linux.tar.gz
+Fieldnotes-v0.1.0-macOS.zip
+Fieldnotes-v0.1.0-Windows.zip
+Fieldnotes-v0.1.0-Linux.tar.gz
 ```
 
 ---

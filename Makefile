@@ -1,10 +1,10 @@
-# Makefile for Fieldnote Lite
+# Makefile for Fieldnotes Lite
 # 提供常用命令的快捷方式
 
 .PHONY: help install run test clean dev format lint
 
 help:  ## 显示帮助信息
-	@echo "Fieldnote Lite - 可用命令:"
+	@echo "Fieldnotes Lite - 可用命令:"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 

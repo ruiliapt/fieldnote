@@ -1,8 +1,8 @@
 @echo off
-REM Fieldnote Lite 启动脚本 (Windows)
+REM Fieldnotes Lite 启动脚本 (Windows)
 
 echo ==========================================
-echo   Fieldnote Lite
+echo   Fieldnotes Lite
 echo   田野笔记管理工具
 echo ==========================================
 echo.

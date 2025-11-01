@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
     
     def init_ui(self):
         """初始化用户界面"""
-        self.setWindowTitle("Fieldnote Lite - 田野笔记管理工具")
+        self.setWindowTitle("Fieldnotes Lite - 田野笔记管理工具")
         self.setGeometry(100, 100, 1200, 800)
         
         # 创建菜单栏

@@ -1,4 +1,4 @@
-# Fieldnote Lite - 故障排除指南
+# Fieldnotes Lite - 故障排除指南
 
 **更新日期**: 2025-11-01
 
@@ -10,7 +10,7 @@
 
 **症状**: 
 ```
-"Fieldnote" quit unexpectedly.
+"Fieldnotes" quit unexpectedly.
 ```
 
 **崩溃日志显示**:
@@ -33,7 +33,7 @@ QtCore 在初始化时无法找到 Qt 插件路径，导致空指针访问崩溃
 ./scripts/build_executable_fixed.sh
 
 # 2. 测试
-open dist/Fieldnote.app
+open dist/Fieldnotes.app
 ```
 
 #### 方案 B: 诊断问题
@@ -43,7 +43,7 @@ open dist/Fieldnote.app
 ./scripts/debug_crash.sh
 
 # 查看详细错误信息
-./dist/Fieldnote.app/Contents/MacOS/Fieldnote
+./dist/Fieldnotes.app/Contents/MacOS/Fieldnotes
 ```
 
 #### 方案 C: 从终端运行
@@ -51,7 +51,7 @@ open dist/Fieldnote.app
 ```bash
 # 从终端运行可以看到详细错误
 cd dist
-./Fieldnote.app/Contents/MacOS/Fieldnote
+./Fieldnotes.app/Contents/MacOS/Fieldnotes
 ```
 
 #### 方案 D: 使用源码运行（临时方案）
@@ -69,13 +69,13 @@ poetry run python main.py
 
 **症状**:
 ```
-"Fieldnote" cannot be opened because the developer cannot be verified.
+"Fieldnotes" cannot be opened because the developer cannot be verified.
 ```
 
 **解决方案**:
 
 **方法 1: 右键打开**
-1. 右键点击 `Fieldnote.app`
+1. 右键点击 `Fieldnotes.app`
 2. 选择"打开"
 3. 在弹出窗口中点击"打开"
 
@@ -86,8 +86,8 @@ poetry run python main.py
 
 **方法 3: 移除隔离属性**
 ```bash
-xattr -cr dist/Fieldnote.app
-open dist/Fieldnote.app
+xattr -cr dist/Fieldnotes.app
+open dist/Fieldnotes.app
 ```
 
 ---
@@ -184,7 +184,7 @@ macOS 首次运行时需要验证签名和扫描文件
 - 如果每次都很慢，尝试：
   ```bash
   # 移除隔离属性
-  xattr -cr dist/Fieldnote.app
+  xattr -cr dist/Fieldnotes.app
   ```
 
 ---
@@ -205,10 +205,10 @@ macOS 首次运行时需要验证签名和扫描文件
 ```bash
 # 删除锁文件
 rm /tmp/fieldnote_lite.lock
-rm ~/Library/Application\ Support/Fieldnote/fieldnote_lite.lock
+rm ~/Library/Application\ Support/Fieldnotes/fieldnote_lite.lock
 
 # 重新启动
-open dist/Fieldnote.app
+open dist/Fieldnotes.app
 ```
 
 **如果想强制启动多个实例**:
@@ -253,10 +253,10 @@ poetry add --group dev pyinstaller
 open ~/Library/Logs/DiagnosticReports/
 
 # 查看控制台日志
-打开"控制台.app" → 搜索 "Fieldnote"
+打开"控制台.app" → 搜索 "Fieldnotes"
 
 # 从终端运行查看输出
-./dist/Fieldnote.app/Contents/MacOS/Fieldnote
+./dist/Fieldnotes.app/Contents/MacOS/Fieldnotes
 ```
 
 **Windows**:
@@ -265,7 +265,7 @@ open ~/Library/Logs/DiagnosticReports/
 eventvwr.msc
 
 :: 从命令行运行
-dist\Fieldnote\Fieldnote.exe
+dist\Fieldnotes\Fieldnotes.exe
 ```
 
 **Linux**:
@@ -274,7 +274,7 @@ dist\Fieldnote\Fieldnote.exe
 journalctl | grep -i fieldnote
 
 # 从终端运行
-./dist/Fieldnote/Fieldnote
+./dist/Fieldnotes/Fieldnotes
 ```
 
 ### 使用诊断脚本
@@ -367,7 +367,7 @@ logging.basicConfig(
 )
 
 def main():
-    logging.info("Starting Fieldnote Lite...")
+    logging.info("Starting Fieldnotes Lite...")
     # ... 原有代码
 ```
 
@@ -376,13 +376,13 @@ def main():
 ```bash
 # 非窗口模式（可以看到控制台输出）
 poetry run pyinstaller \
-    --name="Fieldnote-Debug" \
+    --name="Fieldnotes-Debug" \
     --console \
     --debug=all \
     main.py
 
 # 运行并查看输出
-./dist/Fieldnote-Debug/Fieldnote-Debug
+./dist/Fieldnotes-Debug/Fieldnotes-Debug
 ```
 
 ---

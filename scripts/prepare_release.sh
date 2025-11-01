@@ -1,11 +1,11 @@
 #!/bin/bash
-# Fieldnote Lite - 准备 GitHub Release
+# Fieldnotes Lite - 准备 GitHub Release
 
 VERSION="0.1.0"
 RELEASE_DIR="release-v${VERSION}"
 
 echo "=========================================="
-echo "  Fieldnote Lite - 准备 GitHub Release"
+echo "  Fieldnotes Lite - 准备 GitHub Release"
 echo "  版本: v${VERSION}"
 echo "=========================================="
 echo ""
@@ -18,7 +18,7 @@ mkdir -p "${RELEASE_DIR}"
 echo "📦 步骤 1/4: 构建 macOS 版本..."
 ./scripts/build_executable.sh
 
-if [ -d "dist/Fieldnote.app" ]; then
+if [ -d "dist/Fieldnotes.app" ]; then
     echo "✅ macOS 版本构建成功"
     
     # 创建 DMG（可选，需要 create-dmg 工具）
@@ -27,9 +27,9 @@ if [ -d "dist/Fieldnote.app" ]; then
     # 创建 ZIP
     echo "📦 打包 macOS 版本为 ZIP..."
     cd dist
-    zip -r -q "../${RELEASE_DIR}/Fieldnote-v${VERSION}-macOS.zip" Fieldnote.app
+    zip -r -q "../${RELEASE_DIR}/Fieldnotes-v${VERSION}-macOS.zip" Fieldnotes.app
     cd ..
-    echo "✅ 已创建: ${RELEASE_DIR}/Fieldnote-v${VERSION}-macOS.zip"
+    echo "✅ 已创建: ${RELEASE_DIR}/Fieldnotes-v${VERSION}-macOS.zip"
 else
     echo "❌ macOS 版本构建失败"
     exit 1
@@ -45,11 +45,11 @@ echo "✅ 已创建: ${RELEASE_DIR}/Source-Code-v${VERSION}.zip"
 echo ""
 echo "📝 步骤 3/4: 生成 Release Notes..."
 cat > "${RELEASE_DIR}/RELEASE_NOTES.md" << 'EOF'
-# Fieldnote Lite v0.1.0
+# Fieldnotes Lite v0.1.0
 
 ## 🎉 首次发布！
 
-Fieldnote Lite 是一个轻量级、跨平台的语言学田野语料管理工具。
+Fieldnotes Lite 是一个轻量级、跨平台的语言学田野语料管理工具。
 
 ### ✨ 核心功能
 
@@ -62,9 +62,9 @@ Fieldnote Lite 是一个轻量级、跨平台的语言学田野语料管理工�
 ### 📥 下载安装
 
 #### macOS
-1. 下载 `Fieldnote-v0.1.0-macOS.zip`
+1. 下载 `Fieldnotes-v0.1.0-macOS.zip`
 2. 解压缩
-3. 双击 `Fieldnote.app` 启动
+3. 双击 `Fieldnotes.app` 启动
 4. 如提示"无法验证开发者"：
    - 右键点击应用 → 选择"打开" → 点击"打开"
    - 或在"系统偏好设置" → "安全性与隐私"中允许
@@ -136,14 +136,14 @@ echo ""
 echo "3. 创建 Release："
 echo "   gh release create v${VERSION} \\"
 echo "       ${RELEASE_DIR}/*.zip \\"
-echo "       --title 'Fieldnote Lite v${VERSION}' \\"
+echo "       --title 'Fieldnotes Lite v${VERSION}' \\"
 echo "       --notes-file ${RELEASE_DIR}/RELEASE_NOTES.md"
 echo ""
 echo "方式2: 使用 GitHub 网页"
 echo "--------------------------------"
 echo "1. 访问: https://github.com/ruiliapt/fieldnote/releases/new"
 echo "2. Tag: v${VERSION}"
-echo "3. Title: Fieldnote Lite v${VERSION}"
+echo "3. Title: Fieldnotes Lite v${VERSION}"
 echo "4. 复制 ${RELEASE_DIR}/RELEASE_NOTES.md 的内容到描述框"
 echo "5. 上传 ${RELEASE_DIR}/ 下的所有 .zip 文件"
 echo "6. 点击 'Publish release'"

@@ -1,4 +1,4 @@
-# Fieldnote Lite - 项目结构
+# Fieldnotes Lite - 项目结构
 
 **最后更新**: 2025-10-20
 
@@ -39,7 +39,7 @@ fieldnote/
 │   ├── stop.sh                    # macOS/Linux 停止脚本
 │   ├── stop.bat                   # Windows 停止脚本
 │   ├── release.sh                 # 发布脚本
-│   └── 启动Fieldnote.command      # macOS 双击启动脚本
+│   └── 启动Fieldnotes.command      # macOS 双击启动脚本
 │
 ├── tests/                          # 🧪 测试文件
 │   ├── test_basic.py              # 基础测试
@@ -54,8 +54,8 @@ fieldnote/
 │   └── sample_data.csv            # CSV 格式示例
 │
 ├── dist/                           # 📦 构建产物
-│   ├── Fieldnote.app              # macOS 应用程序（构建后）
-│   ├── Fieldnote/                 # 构建目录
+│   ├── Fieldnotes.app              # macOS 应用程序（构建后）
+│   ├── Fieldnotes/                 # 构建目录
 │   ├── *.tar.gz                   # 分发压缩包（构建后）
 │   ├── 使用说明.txt               # 用户说明文档
 │   ├── ONE_PAGE_GUIDE.md          # 快速指南（分发用）
@@ -105,7 +105,7 @@ fieldnote/
 | `build_executable.sh` / `build_executable.bat` | macOS/Linux / Windows | 构建可执行文件 |
 | `stop.sh` / `stop.bat` | macOS/Linux / Windows | 安全停止程序 |
 | `release.sh` | macOS/Linux | 发布新版本向导 |
-| `启动Fieldnote.command` | macOS | 双击启动脚本 |
+| `启动Fieldnotes.command` | macOS | 双击启动脚本 |
 
 ---
 
@@ -167,11 +167,11 @@ python tests/test_basic.py
 ./scripts/build_executable.sh
 
 # 4. 测试可执行文件
-open dist/Fieldnote.app
+open dist/Fieldnotes.app
 
 # 5. 创建分发包
 cd dist
-tar -czf Fieldnote-0.1.0-macOS.tar.gz Fieldnote.app *.txt *.md
+tar -czf Fieldnotes-0.1.0-macOS.tar.gz Fieldnotes.app *.txt *.md
 ```
 
 ---
@@ -182,17 +182,17 @@ tar -czf Fieldnote-0.1.0-macOS.tar.gz Fieldnote.app *.txt *.md
 
 ```
 dist/
-├── Fieldnote.app/              # macOS 应用程序包
+├── Fieldnotes.app/              # macOS 应用程序包
 │   └── Contents/
 │       ├── MacOS/
-│       │   └── Fieldnote       # 可执行文件
+│       │   └── Fieldnotes       # 可执行文件
 │       ├── Frameworks/         # 依赖库
 │       ├── Resources/          # 资源文件
 │       └── Info.plist          # 应用信息
 │
-├── Fieldnote/                  # 打包目录（中间产物）
+├── Fieldnotes/                  # 打包目录（中间产物）
 │
-├── Fieldnote-0.1.0-macOS-Complete.tar.gz  # 完整分发包
+├── Fieldnotes-0.1.0-macOS-Complete.tar.gz  # 完整分发包
 │
 ├── 使用说明.txt                 # 用户说明
 ├── ONE_PAGE_GUIDE.md           # 快速指南
@@ -318,5 +318,5 @@ make version      # 查看版本
 
 ---
 
-**项目结构说明文档** - Fieldnote Lite v0.1.0
+**项目结构说明文档** - Fieldnotes Lite v0.1.0
 

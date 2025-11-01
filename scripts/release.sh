@@ -1,9 +1,9 @@
 #!/bin/bash
-# Fieldnote Lite - 版本发布脚本
+# Fieldnotes Lite - 版本发布脚本
 set -e
 
 echo "=========================================="
-echo "  Fieldnote Lite 版本发布向导"
+echo "  Fieldnotes Lite 版本发布向导"
 echo "=========================================="
 echo ""
 

@@ -1,4 +1,4 @@
-# Fieldnote Lite - 非技术用户使用指南
+# Fieldnotes Lite - 非技术用户使用指南
 
 **专为语言学研究者设计的田野笔记管理工具**
 
@@ -26,17 +26,17 @@
    - （将 `yourusername` 替换为实际用户名）
 
 2. **选择您的系统**
-   - **Windows 用户**：下载 `Fieldnote-Setup-0.1.0.exe`
-   - **Mac 用户**：下载 `Fieldnote-0.1.0.dmg`
-   - **Linux 用户**：下载 `Fieldnote-0.1.0-linux.tar.gz`
+   - **Windows 用户**：下载 `Fieldnotes-Setup-0.1.0.exe`
+   - **Mac 用户**：下载 `Fieldnotes-0.1.0.dmg`
+   - **Linux 用户**：下载 `Fieldnotes-0.1.0-linux.tar.gz`
 
 3. **安装**
    - **Windows**：双击 `.exe` 文件，按提示安装
    - **Mac**：双击 `.dmg` 文件，拖动到"应用程序"文件夹
-   - **Linux**：解压后运行 `Fieldnote` 文件
+   - **Linux**：解压后运行 `Fieldnotes` 文件
 
 4. **运行程序**
-   - 在"开始菜单"（Windows）或"启动台"（Mac）中找到 Fieldnote
+   - 在"开始菜单"（Windows）或"启动台"（Mac）中找到 Fieldnotes
    - 双击图标启动
 
 > ✅ **完成！** 不需要安装 Python，不需要命令行，就像使用普通软件一样！
@@ -85,7 +85,7 @@
    - 在黑色窗口中输入：`python --version`
    - 如果显示版本号，说明安装成功
 
-#### 第 2 步：下载 Fieldnote
+#### 第 2 步：下载 Fieldnotes
 
 1. **下载项目文件**
    - 访问：https://github.com/yourusername/fieldnote
@@ -107,7 +107,7 @@
 
 #### 第 4 步：运行程序
 
-1. **启动 Fieldnote**
+1. **启动 Fieldnotes**
    - 双击 `run.bat` 文件
    - 程序窗口会自动打开
 
@@ -133,7 +133,7 @@
    - 下载 Mac 版本
    - 双击安装包，按提示安装
 
-#### 第 2 步：下载 Fieldnote
+#### 第 2 步：下载 Fieldnotes
 
 1. **下载项目文件**
    - 访问：https://github.com/yourusername/fieldnote
@@ -157,7 +157,7 @@
 
 #### 第 4 步：运行程序
 
-1. **启动 Fieldnote**
+1. **启动 Fieldnotes**
    - 在终端中输入：`./run.sh`
    - 按回车
    - 程序窗口会打开
@@ -280,7 +280,7 @@
 
 ```
 ┌─────────────────────────────────────────────────┐
-│ Fieldnote Lite - 田野笔记管理工具                  │
+│ Fieldnotes Lite - 田野笔记管理工具                  │
 ├─────────────────────────────────────────────────┤
 │ 数据管理 │ 检索 │ 导出                            │
 ├─────────────────────────────────────────────────┤
@@ -400,7 +400,7 @@
 ### 田野调查中
 
 1. **现场记录**：在笔记本/录音笔上记录
-2. **当天整理**：回到住处后录入 Fieldnote
+2. **当天整理**：回到住处后录入 Fieldnotes
 3. **每日备份**：复制数据库文件到云盘
 4. **每周导出**：导出 Word 文档查看整体进度
 
@@ -422,7 +422,7 @@
 3. **云盘使用** - 数据备份和同步
 4. **ELAN/Praat** - 如果涉及音频分析
 
-但对于日常使用 Fieldnote，您只需要知道：
+但对于日常使用 Fieldnotes，您只需要知道：
 - ✅ 如何打开程序
 - ✅ 如何输入数据
 - ✅ 如何导出文档
@@ -434,7 +434,7 @@
 
 ## ✨ 最后的话
 
-Fieldnote Lite 是为**像您这样的语言学研究者**设计的。
+Fieldnotes Lite 是为**像您这样的语言学研究者**设计的。
 
 我们的目标是：
 - **简单易用** - 不需要编程知识
@@ -451,5 +451,5 @@ Fieldnote Lite 是为**像您这样的语言学研究者**设计的。
 
 ---
 
-**Fieldnote Lite** - 为语言学家设计的田野笔记工具
+**Fieldnotes Lite** - 为语言学家设计的田野笔记工具
 

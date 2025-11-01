@@ -29,7 +29,7 @@ from gui import MainWindow
 def main():
     """主函数"""
     app = QApplication(sys.argv)
-    app.setApplicationName("Fieldnote Lite")
+    app.setApplicationName("Fieldnotes Lite")
     app.setOrganizationName("Linguistics Research")
     
     # 单实例检查：防止程序被多次启动
@@ -43,9 +43,9 @@ def main():
         # 如果无法获取锁，说明程序已经在运行
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Icon.Warning)
-        msg.setWindowTitle("Fieldnote Lite")
+        msg.setWindowTitle("Fieldnotes Lite")
         msg.setText("程序已在运行")
-        msg.setInformativeText("Fieldnote Lite 已经有一个实例在运行中。\n\n"
+        msg.setInformativeText("Fieldnotes Lite 已经有一个实例在运行中。\n\n"
                               "请在任务栏或 Dock 中查找已打开的窗口。\n\n"
                               "如果确定没有其他实例在运行，请检查并删除锁文件：\n"
                               f"{lock_file_path}")

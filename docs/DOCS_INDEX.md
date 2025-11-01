@@ -1,4 +1,4 @@
-# Fieldnote Lite - 文档索引
+# Fieldnotes Lite - 文档索引
 
 本项目提供了完整的文档，面向不同类型的用户。
 
@@ -266,5 +266,5 @@ fieldnote/
 
 ---
 
-**Fieldnote Lite** - 完善的文档体系，服务所有类型的用户！📚
+**Fieldnotes Lite** - 完善的文档体系，服务所有类型的用户！📚
 

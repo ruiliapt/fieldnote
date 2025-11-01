@@ -1,4 +1,4 @@
-# Fieldnote Lite - 项目结构速览
+# Fieldnotes Lite - 项目结构速览
 
 ```
 fieldnote/                           # 项目根目录
@@ -36,7 +36,7 @@ fieldnote/                           # 项目根目录
 │   ├── run.sh/.bat                 # 运行脚本
 │   ├── stop.sh/.bat                # 停止脚本
 │   ├── release.sh                  # 发布脚本
-│   └── 启动Fieldnote.command       # macOS快捷启动
+│   └── 启动Fieldnotes.command       # macOS快捷启动
 │
 ├── 🧪 tests/ - 所有测试
 │   ├── test_basic.py
@@ -50,7 +50,7 @@ fieldnote/                           # 项目根目录
 │   └── sample_data.csv
 │
 ├── 📦 dist/ - 构建产物
-│   ├── Fieldnote.app               # macOS应用
+│   ├── Fieldnotes.app               # macOS应用
 │   ├── *.tar.gz                    # 分发包
 │   └── 文档副本
 │

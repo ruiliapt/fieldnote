@@ -91,7 +91,7 @@ make build-exe
 
 # 创建分发包
 cd dist
-tar -czf Fieldnote-$(uname -s)-$(uname -m).tar.gz Fieldnote/
+tar -czf Fieldnotes-$(uname -s)-$(uname -m).tar.gz Fieldnotes/
 ```
 
 ### Windows

@@ -1,11 +1,11 @@
 #!/bin/bash
-# Fieldnote Lite 启动脚本
+# Fieldnotes Lite 启动脚本
 # 双击此文件即可启动程序
 
 cd "$(dirname "$0")"
 
 echo "=========================================="
-echo "  Fieldnote Lite"
+echo "  Fieldnotes Lite"
 echo "  田野笔记管理工具"
 echo "=========================================="
 echo ""

@@ -1,4 +1,4 @@
-# 🎉 Fieldnote Lite - 构建成功！
+# 🎉 Fieldnotes Lite - 构建成功！
 
 **日期**: 2025-10-20  
 **版本**: 0.1.0  
@@ -54,8 +54,8 @@
 
 | 文件 | 大小 | 说明 | 用途 |
 |------|------|------|------|
-| **Fieldnote.app** | ~121 MB | macOS 应用程序 | 双击启动 ⭐⭐⭐⭐⭐ |
-| **Fieldnote-0.1.0-macOS-Complete.tar.gz** | 47 MB | 完整分发包 | 分享给用户 ⭐⭐⭐⭐⭐ |
+| **Fieldnotes.app** | ~121 MB | macOS 应用程序 | 双击启动 ⭐⭐⭐⭐⭐ |
+| **Fieldnotes-0.1.0-macOS-Complete.tar.gz** | 47 MB | 完整分发包 | 分享给用户 ⭐⭐⭐⭐⭐ |
 | 使用说明.txt | 2 KB | 简要说明 | 快速参考 |
 | ONE_PAGE_GUIDE.md | 2 KB | 快速指南 | 5分钟上手 |
 | USER_GUIDE_NON_TECHNICAL.md | 12 KB | 详细教程 | 完整说明 |
@@ -91,7 +91,7 @@
 - ✅ Unicode/IPA 显示正常
 
 ### 启动测试
-- ✅ 双击 Fieldnote.app 成功启动
+- ✅ 双击 Fieldnotes.app 成功启动
 - ✅ 命令行启动成功
 - ✅ 单实例保护正常工作
 - ✅ 窗口正常显示
@@ -109,11 +109,11 @@
 
 ```bash
 # 分发文件
-dist/Fieldnote-0.1.0-macOS-Complete.tar.gz
+dist/Fieldnotes-0.1.0-macOS-Complete.tar.gz
 
 # 用户操作
 1. 下载并解压
-2. 双击 Fieldnote.app
+2. 双击 Fieldnotes.app
 3. 首次启动：右键 → 打开
 4. 开始使用
 ```
@@ -130,7 +130,7 @@ dist/Fieldnote-0.1.0-macOS-Complete.tar.gz
 
 2. **创建 Release**
    - 访问: https://github.com/yourusername/fieldnote/releases/new
-   - 上传: Fieldnote-0.1.0-macOS-Complete.tar.gz
+   - 上传: Fieldnotes-0.1.0-macOS-Complete.tar.gz
    - 发布
 
 ### 方式 3: 网盘分享
@@ -149,7 +149,7 @@ dist/Fieldnote-0.1.0-macOS-Complete.tar.gz
 ### 简短版（适合聊天）
 
 ```
-Fieldnote Lite v0.1.0 已发布！
+Fieldnotes Lite v0.1.0 已发布！
 
 ✨ 田野笔记管理工具
 - 支持 IPA 音标
@@ -160,7 +160,7 @@ Fieldnote Lite v0.1.0 已发布！
 
 🚀 使用:
 1. 解压文件
-2. 双击 Fieldnote.app
+2. 双击 Fieldnotes.app
 3. 首次打开：右键 → 打开
 4. 开始使用！
 
@@ -185,7 +185,7 @@ Fieldnote Lite v0.1.0 已发布！
 ### 给开发者
 1. **数据库路径**: 已改为固定路径 `~/.fieldnote/corpus.db`
 2. **打包命令**: `./build_executable.sh`
-3. **测试方法**: 双击 dist/Fieldnote.app
+3. **测试方法**: 双击 dist/Fieldnotes.app
 4. **依赖管理**: 使用 Poetry
 
 ---
@@ -235,7 +235,7 @@ Fieldnote Lite v0.1.0 已发布！
 
 ## 🎉 总结
 
-**Fieldnote Lite 项目成功完成！**
+**Fieldnotes Lite 项目成功完成！**
 
 - ✅ 功能完整
 - ✅ 测试通过

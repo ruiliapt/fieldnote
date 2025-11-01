@@ -1,6 +1,6 @@
 # 快速开始指南
 
-## 5分钟上手 Fieldnote Lite
+## 5分钟上手 Fieldnotes Lite
 
 ### 1. 安装依赖（首次使用）
 

@@ -1,6 +1,6 @@
 # 跨平台支持说明
 
-Fieldnote Lite 完全支持 **Windows**、**macOS** 和 **Linux** 三大平台。
+Fieldnotes Lite 完全支持 **Windows**、**macOS** 和 **Linux** 三大平台。
 
 ---
 
@@ -157,19 +157,19 @@ sudo pacman -S python-pyqt6  # 可选
 
 ```bash
 ./build_executable.sh
-# 生成: dist/Fieldnote.app
+# 生成: dist/Fieldnotes.app
 
 # 创建 DMG 安装包
 brew install create-dmg
-create-dmg --volname "Fieldnote Lite" \
-    "Fieldnote-0.1.0.dmg" "dist/Fieldnote.app"
+create-dmg --volname "Fieldnotes Lite" \
+    "Fieldnotes-0.1.0.dmg" "dist/Fieldnotes.app"
 ```
 
 ### Windows
 
 ```cmd
 build_executable.bat
-REM 生成: dist\Fieldnote\Fieldnote.exe
+REM 生成: dist\Fieldnotes\Fieldnotes.exe
 
 REM 使用 Inno Setup 创建安装程序
 REM 下载: https://jrsoftware.org/isdl.php
@@ -179,11 +179,11 @@ REM 下载: https://jrsoftware.org/isdl.php
 
 ```bash
 ./build_executable.sh
-# 生成: dist/Fieldnote/Fieldnote
+# 生成: dist/Fieldnotes/Fieldnotes
 
 # 创建 .tar.gz 分发包
 cd dist
-tar -czf Fieldnote-linux-x86_64.tar.gz Fieldnote/
+tar -czf Fieldnotes-linux-x86_64.tar.gz Fieldnotes/
 ```
 
 ---
@@ -240,7 +240,7 @@ sudo pacman -S ttf-dejavu noto-fonts
 **解决**:
 ```bash
 # 方法 1: 移除隔离属性
-xattr -d com.apple.quarantine Fieldnote.app
+xattr -d com.apple.quarantine Fieldnotes.app
 
 # 方法 2: 系统偏好设置 → 安全性 → 仍要打开
 ```
@@ -386,9 +386,9 @@ temp_dir = "/tmp"  # Windows 上不存在
    ```
 
 2. **可执行文件** (按平台分发)
-   - macOS: `Fieldnote-0.1.0.dmg`
-   - Windows: `Fieldnote-Setup-0.1.0.exe`
-   - Linux: `Fieldnote-0.1.0-linux-x86_64.tar.gz`
+   - macOS: `Fieldnotes-0.1.0.dmg`
+   - Windows: `Fieldnotes-Setup-0.1.0.exe`
+   - Linux: `Fieldnotes-0.1.0-linux-x86_64.tar.gz`
 
 3. **源码安装** (所有平台)
    ```bash
@@ -418,5 +418,5 @@ temp_dir = "/tmp"  # Windows 上不存在
 
 ---
 
-**Fieldnote Lite** - 真正的跨平台语料管理工具！ 🌍
+**Fieldnotes Lite** - 真正的跨平台语料管理工具！ 🌍
 

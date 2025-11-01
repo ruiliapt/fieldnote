@@ -1,4 +1,4 @@
-# Fieldnote Lite - 项目重组总结
+# Fieldnotes Lite - 项目重组总结
 
 **重组日期**: 2025-10-20  
 **版本**: 0.1.0  
@@ -45,7 +45,7 @@ fieldnote/
 │   ├── run.*              # 运行脚本（2个）
 │   ├── stop.*             # 停止脚本（2个）
 │   ├── release.sh         # 发布脚本
-│   └── 启动Fieldnote.command
+│   └── 启动Fieldnotes.command
 │
 ├── tests/                  # 🧪 所有测试
 │   ├── test_basic.py
@@ -59,7 +59,7 @@ fieldnote/
 │   └── sample_data.csv
 │
 ├── dist/                   # 📦 构建产物
-│   ├── Fieldnote.app
+│   ├── Fieldnotes.app
 │   ├── *.tar.gz
 │   └── 文档副本
 │
@@ -115,7 +115,7 @@ fieldnote/
 - `stop.sh`
 - `stop.bat`
 - `release.sh`
-- `启动Fieldnote.command`
+- `启动Fieldnotes.command`
 
 ### 测试文件 → tests/
 - `test_basic.py`
@@ -147,7 +147,7 @@ fieldnote/
 - `./stop.sh` → `./scripts/stop.sh`
 - `test_basic.py` → `tests/test_basic.py`
 
-### scripts/启动Fieldnote.command
+### scripts/启动Fieldnotes.command
 添加了路径修正：
 - `cd "$SCRIPT_DIR"` → `cd "$SCRIPT_DIR/.."` (返回项目根目录)
 
@@ -307,5 +307,5 @@ fieldnote/
 
 ---
 
-**项目重组完成** - Fieldnote Lite v0.1.0
+**项目重组完成** - Fieldnotes Lite v0.1.0
 

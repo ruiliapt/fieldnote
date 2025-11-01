@@ -1,8 +1,8 @@
 #!/bin/bash
-# Fieldnote Lite - 可执行文件构建脚本 (macOS/Linux)
+# Fieldnotes Lite - 可执行文件构建脚本 (macOS/Linux)
 
 echo "=========================================="
-echo "  Fieldnote Lite - 构建可执行文件"
+echo "  Fieldnotes Lite - 构建可执行文件"
 echo "=========================================="
 echo ""
 
@@ -19,17 +19,17 @@ rm -rf build dist
 # 打包
 echo ""
 echo "开始打包（macOS .app 模式，使用自定义 spec 排除问题插件）..."
-# 使用自定义 Fieldnote.spec（已配置排除 Qt 权限插件）
+# 使用自定义 Fieldnotes.spec（已配置排除 Qt 权限插件）
 poetry run pyinstaller \
     --clean \
     --noconfirm \
-    Fieldnote.spec
+    Fieldnotes.spec
 
 echo ""
 echo "测试启动..."
 sleep 2
 # 在后台测试启动
-./dist/Fieldnote.app/Contents/MacOS/Fieldnote &
+./dist/Fieldnotes.app/Contents/MacOS/Fieldnotes &
 TESTPID=$!
 sleep 3
 if ps -p $TESTPID > /dev/null 2>&1; then
@@ -40,31 +40,31 @@ else
 fi
 
 # 检查结果
-if [ -d "dist/Fieldnote" ]; then
+if [ -d "dist/Fieldnotes" ]; then
     echo ""
     echo "=========================================="
     echo "  构建成功！"
     echo "=========================================="
     echo ""
-    echo "可执行文件位于: dist/Fieldnote/"
+    echo "可执行文件位于: dist/Fieldnotes/"
     echo ""
     
     # 显示文件大小
-    du -sh dist/Fieldnote/
+    du -sh dist/Fieldnotes/
     
     echo ""
     echo "运行程序："
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "  open dist/Fieldnote/Fieldnote.app"
+        echo "  open dist/Fieldnotes/Fieldnotes.app"
     else
-        echo "  ./dist/Fieldnote/Fieldnote"
+        echo "  ./dist/Fieldnotes/Fieldnotes"
     fi
     echo ""
     echo "创建分发包："
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "  cd dist && tar -czf Fieldnote-macOS.tar.gz Fieldnote.app"
+        echo "  cd dist && tar -czf Fieldnotes-macOS.tar.gz Fieldnotes.app"
     else
-        echo "  cd dist && tar -czf Fieldnote-$(uname -s)-$(uname -m).tar.gz Fieldnote/"
+        echo "  cd dist && tar -czf Fieldnotes-$(uname -s)-$(uname -m).tar.gz Fieldnotes/"
     fi
 else
     echo ""

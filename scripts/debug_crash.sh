@@ -1,12 +1,12 @@
 #!/bin/bash
-# Fieldnote Lite - 崩溃诊断脚本
+# Fieldnotes Lite - 崩溃诊断脚本
 
 echo "=========================================="
-echo "  Fieldnote Lite - 崩溃诊断工具"
+echo "  Fieldnotes Lite - 崩溃诊断工具"
 echo "=========================================="
 echo ""
 
-APP_PATH="dist/Fieldnote.app"
+APP_PATH="dist/Fieldnotes.app"
 
 if [ ! -d "$APP_PATH" ]; then
     echo "❌ 找不到 $APP_PATH"
@@ -19,7 +19,7 @@ echo ""
 
 # 1. 检查可执行文件
 echo "1️⃣  检查可执行文件..."
-EXECUTABLE="$APP_PATH/Contents/MacOS/Fieldnote"
+EXECUTABLE="$APP_PATH/Contents/MacOS/Fieldnotes"
 if [ -f "$EXECUTABLE" ]; then
     echo "   ✅ 可执行文件存在"
     echo "   位置: $EXECUTABLE"
@@ -52,7 +52,7 @@ echo ""
 
 # 3. 检查系统日志
 echo "3️⃣  检查系统崩溃日志..."
-CRASH_LOG=$(ls -t ~/Library/Logs/DiagnosticReports/Fieldnote* 2>/dev/null | head -1)
+CRASH_LOG=$(ls -t ~/Library/Logs/DiagnosticReports/Fieldnotes* 2>/dev/null | head -1)
 
 if [ -n "$CRASH_LOG" ]; then
     echo "   找到崩溃日志: $CRASH_LOG"
@@ -120,6 +120,6 @@ else
 fi
 echo ""
 echo "方案 4: 检查控制台日志"
-echo "   打开\"控制台.app\" → 搜索 \"Fieldnote\""
+echo "   打开\"控制台.app\" → 搜索 \"Fieldnotes\""
 echo ""
 

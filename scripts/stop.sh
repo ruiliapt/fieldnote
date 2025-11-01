@@ -1,15 +1,15 @@
 #!/bin/bash
-# Fieldnote Lite - 安全停止脚本
+# Fieldnotes Lite - 安全停止脚本
 
-echo "正在停止 Fieldnote Lite..."
+echo "正在停止 Fieldnotes Lite..."
 
-# 查找 Fieldnote Lite 进程（更精确的匹配）
+# 查找 Fieldnotes Lite 进程（更精确的匹配）
 # 匹配包含当前目录路径的 main.py
 CURRENT_DIR=$(pwd)
 PID=$(ps aux | grep "python.*${CURRENT_DIR}/main.py" | grep -v grep | awk '{print $2}')
 
 if [ -z "$PID" ]; then
-    echo "未找到运行中的 Fieldnote Lite 进程"
+    echo "未找到运行中的 Fieldnotes Lite 进程"
     
     # 检查锁文件
     if [ "$(uname)" = "Darwin" ]; then
@@ -34,6 +34,6 @@ else
         kill -9 $PID
     fi
     
-    echo "✅ Fieldnote Lite 已停止"
+    echo "✅ Fieldnotes Lite 已停止"
 fi
 

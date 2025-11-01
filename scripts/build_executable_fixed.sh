@@ -1,9 +1,9 @@
 #!/bin/bash
-# Fieldnote Lite - 修复版构建脚本
+# Fieldnotes Lite - 修复版构建脚本
 # 解决 macOS "quit unexpectedly" 问题
 
 echo "=========================================="
-echo "  Fieldnote Lite - 修复版构建"
+echo "  Fieldnotes Lite - 修复版构建"
 echo "=========================================="
 echo ""
 
@@ -77,7 +77,7 @@ else
 fi
 
 poetry run pyinstaller \
-    --name="Fieldnote" \
+    --name="Fieldnotes" \
     --windowed \
     --osx-bundle-identifier="com.linguistics.fieldnote" \
     --add-data="database.py:." \
@@ -120,9 +120,9 @@ poetry run pyinstaller \
 # 验证 Qt 插件是否被打包
 echo ""
 echo "验证打包结果..."
-if [ -d "dist/Fieldnote.app/Contents/MacOS/PyQt6/Qt6/plugins" ]; then
+if [ -d "dist/Fieldnotes.app/Contents/MacOS/PyQt6/Qt6/plugins" ]; then
     echo "✅ Qt 插件已打包"
-    ls -la "dist/Fieldnote.app/Contents/MacOS/PyQt6/Qt6/plugins/"
+    ls -la "dist/Fieldnotes.app/Contents/MacOS/PyQt6/Qt6/plugins/"
 else
     echo "⚠️  Qt 插件可能缺失"
 fi
@@ -136,7 +136,7 @@ if [ $BUILD_EXIT -ne 0 ]; then
 fi
 
 # 检查构建结果
-if [ ! -d "dist/Fieldnote.app" ]; then
+if [ ! -d "dist/Fieldnotes.app" ]; then
     echo "❌ 构建的 .app 不存在"
     exit 1
 fi
@@ -153,7 +153,7 @@ echo "尝试从终端运行以查看详细错误..."
 echo ""
 
 # 直接运行并捕获输出
-./dist/Fieldnote.app/Contents/MacOS/Fieldnote 2>&1 &
+./dist/Fieldnotes.app/Contents/MacOS/Fieldnotes 2>&1 &
 TEST_PID=$!
 
 sleep 5
@@ -183,17 +183,17 @@ echo "=========================================="
 echo "  构建成功！"
 echo "=========================================="
 echo ""
-echo "可执行文件: dist/Fieldnote.app"
+echo "可执行文件: dist/Fieldnotes.app"
 echo ""
-du -sh dist/Fieldnote.app
+du -sh dist/Fieldnotes.app
 echo ""
 echo "运行程序："
-echo "  open dist/Fieldnote.app"
+echo "  open dist/Fieldnotes.app"
 echo ""
 echo "或从终端运行（查看调试信息）："
-echo "  ./dist/Fieldnote.app/Contents/MacOS/Fieldnote"
+echo "  ./dist/Fieldnotes.app/Contents/MacOS/Fieldnotes"
 echo ""
 echo "打包为 ZIP："
-echo "  cd dist && zip -r Fieldnote-v0.1.0-macOS.zip Fieldnote.app"
+echo "  cd dist && zip -r Fieldnotes-v0.1.0-macOS.zip Fieldnotes.app"
 echo ""
 

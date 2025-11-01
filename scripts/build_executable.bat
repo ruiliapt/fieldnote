@@ -1,8 +1,8 @@
 @echo off
-REM Fieldnote Lite - 可执行文件构建脚本 (Windows)
+REM Fieldnotes Lite - 可执行文件构建脚本 (Windows)
 
 echo ==========================================
-echo   Fieldnote Lite - 构建可执行文件
+echo   Fieldnotes Lite - 构建可执行文件
 echo ==========================================
 echo.
 
@@ -23,7 +23,7 @@ REM 打包
 echo.
 echo 开始打包...
 poetry run pyinstaller ^
-    --name=Fieldnote ^
+    --name=Fieldnotes ^
     --windowed ^
     --add-data="README.md;." ^
     --hidden-import=PyQt6 ^
@@ -38,16 +38,16 @@ poetry run pyinstaller ^
     main.py
 
 REM 检查结果
-if exist "dist\Fieldnote" (
+if exist "dist\Fieldnotes" (
     echo.
     echo ==========================================
     echo   构建成功！
     echo ==========================================
     echo.
-    echo 可执行文件位于: dist\Fieldnote\
+    echo 可执行文件位于: dist\Fieldnotes\
     echo.
     echo 运行程序：
-    echo   dist\Fieldnote\Fieldnote.exe
+    echo   dist\Fieldnotes\Fieldnotes.exe
     echo.
 ) else (
     echo.

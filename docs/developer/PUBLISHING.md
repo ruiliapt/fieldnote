@@ -1,6 +1,6 @@
-# Fieldnote Lite - 发布指南
+# Fieldnotes Lite - 发布指南
 
-本文档说明如何发布 Fieldnote Lite 软件的各种方式。
+本文档说明如何发布 Fieldnotes Lite 软件的各种方式。
 
 ---
 
@@ -98,7 +98,7 @@ rm -rf build dist
 
 # 打包
 poetry run pyinstaller \
-    --name="Fieldnote" \
+    --name="Fieldnotes" \
     --windowed \
     --icon=icon.icns \
     --add-data="README.md:." \
@@ -108,7 +108,7 @@ poetry run pyinstaller \
     --clean \
     main.py
 
-echo "构建完成！可执行文件位于: dist/Fieldnote/"
+echo "构建完成！可执行文件位于: dist/Fieldnotes/"
 ```
 
 创建 `build_executable.bat` (Windows):
@@ -119,7 +119,7 @@ rmdir /s /q build dist
 
 REM 打包
 poetry run pyinstaller ^
-    --name=Fieldnote ^
+    --name=Fieldnotes ^
     --windowed ^
     --icon=icon.ico ^
     --add-data="README.md;." ^
@@ -129,7 +129,7 @@ poetry run pyinstaller ^
     --clean ^
     main.py
 
-echo 构建完成！可执行文件位于: dist\Fieldnote\
+echo 构建完成！可执行文件位于: dist\Fieldnotes\
 pause
 ```
 
@@ -144,10 +144,10 @@ chmod +x build_executable.sh
 build_executable.bat
 ```
 
-生成的文件在 `dist/Fieldnote/` 目录：
-- **macOS**: `Fieldnote.app`
-- **Windows**: `Fieldnote.exe`
-- **Linux**: `Fieldnote`
+生成的文件在 `dist/Fieldnotes/` 目录：
+- **macOS**: `Fieldnotes.app`
+- **Windows**: `Fieldnotes.exe`
+- **Linux**: `Fieldnotes`
 
 ### 创建安装包
 
@@ -158,19 +158,19 @@ brew install create-dmg
 
 # 创建 DMG
 create-dmg \
-    --volname "Fieldnote Lite" \
+    --volname "Fieldnotes Lite" \
     --window-pos 200 120 \
     --window-size 800 400 \
     --icon-size 100 \
     --app-drop-link 600 185 \
-    "Fieldnote-0.1.0.dmg" \
-    "dist/Fieldnote.app"
+    "Fieldnotes-0.1.0.dmg" \
+    "dist/Fieldnotes.app"
 ```
 
 **Windows** - 使用 Inno Setup:
 1. 下载安装 [Inno Setup](https://jrsoftware.org/isdl.php)
 2. 创建安装脚本 `installer.iss`
-3. 编译生成 `Fieldnote-Setup.exe`
+3. 编译生成 `Fieldnotes-Setup.exe`
 
 ---
 
@@ -213,19 +213,19 @@ create-dmg \
 1. 访问你的 GitHub 仓库
 2. 点击 "Releases" → "Create a new release"
 3. 选择标签: `v0.1.0`
-4. 标题: `Fieldnote Lite v0.1.0`
+4. 标题: `Fieldnotes Lite v0.1.0`
 5. 描述（使用 CHANGELOG 内容）
 6. 上传文件：
    - 源码压缩包（GitHub 自动生成）
-   - macOS: `Fieldnote-0.1.0.dmg`
-   - Windows: `Fieldnote-Setup-0.1.0.exe`
-   - Linux: `Fieldnote-0.1.0-linux.tar.gz`
+   - macOS: `Fieldnotes-0.1.0.dmg`
+   - Windows: `Fieldnotes-Setup-0.1.0.exe`
+   - Linux: `Fieldnotes-0.1.0-linux.tar.gz`
 7. 点击 "Publish release"
 
 ### Release 描述模板
 
 ```markdown
-# Fieldnote Lite v0.1.0
+# Fieldnotes Lite v0.1.0
 
 田野笔记管理工具 - 专为语言学田野调查设计
 
@@ -248,9 +248,9 @@ fieldnote
 
 ### 方式二：独立可执行文件
 
-- **macOS**: 下载 `Fieldnote-0.1.0.dmg`
-- **Windows**: 下载 `Fieldnote-Setup-0.1.0.exe`
-- **Linux**: 下载 `Fieldnote-0.1.0-linux.tar.gz`
+- **macOS**: 下载 `Fieldnotes-0.1.0.dmg`
+- **Windows**: 下载 `Fieldnotes-Setup-0.1.0.exe`
+- **Linux**: 下载 `Fieldnotes-0.1.0-linux.tar.gz`
 
 ### 方式三：源码安装
 ```bash
@@ -357,7 +357,7 @@ poetry version major   # 0.2.0 → 1.0.0
 set -e
 
 echo "=========================================="
-echo "  Fieldnote Lite 发布脚本"
+echo "  Fieldnotes Lite 发布脚本"
 echo "=========================================="
 echo ""
 
@@ -458,7 +458,7 @@ jobs:
     - name: Build executable
       run: |
         poetry add --group dev pyinstaller
-        poetry run pyinstaller --name=Fieldnote --windowed main.py
+        poetry run pyinstaller --name=Fieldnotes --windowed main.py
     
     - name: Upload Release Asset
       uses: actions/upload-artifact@v3
@@ -482,7 +482,7 @@ jobs:
 
 ## 🎉 恭喜！
 
-按照以上步骤，你的 Fieldnote Lite 就可以成功发布了！
+按照以上步骤，你的 Fieldnotes Lite 就可以成功发布了！
 
 **推荐发布顺序**：
 1. 先发布到 GitHub Releases（测试分发）

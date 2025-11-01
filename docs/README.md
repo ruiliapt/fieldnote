@@ -1,6 +1,6 @@
-# Fieldnote Lite 文档
+# Fieldnotes Lite 文档
 
-本目录包含 Fieldnote Lite 的所有文档。
+本目录包含 Fieldnotes Lite 的所有文档。
 
 ## 📚 文档分类
 

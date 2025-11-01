@@ -1,4 +1,4 @@
-# ✅ Fieldnote Lite - 准备分发
+# ✅ Fieldnotes Lite - 准备分发
 
 **日期**: 2025-10-20  
 **状态**: ✅ 已完成，可以分发！
@@ -33,7 +33,7 @@
 - [x] 文档索引和导航
 
 ### ✅ 构建打包
-- [x] macOS 可执行文件 (Fieldnote.app)
+- [x] macOS 可执行文件 (Fieldnotes.app)
 - [x] 基础分发包 (47 MB)
 - [x] 完整分发包 (173 MB，含文档)
 - [x] 使用说明文档
@@ -46,9 +46,9 @@
 
 | 文件 | 大小 | 说明 | 推荐 |
 |------|------|------|------|
-| **Fieldnote.app** | 121 MB | macOS 应用程序 | ⭐⭐⭐ |
-| **Fieldnote-0.1.0-macOS-Complete.tar.gz** | 173 MB | 程序+文档完整包 | ⭐⭐⭐⭐⭐ |
-| **Fieldnote-0.1.0-macOS-arm64.tar.gz** | 47 MB | 仅程序 | ⭐⭐⭐ |
+| **Fieldnotes.app** | 121 MB | macOS 应用程序 | ⭐⭐⭐ |
+| **Fieldnotes-0.1.0-macOS-Complete.tar.gz** | 173 MB | 程序+文档完整包 | ⭐⭐⭐⭐⭐ |
+| **Fieldnotes-0.1.0-macOS-arm64.tar.gz** | 47 MB | 仅程序 | ⭐⭐⭐ |
 | 使用说明.txt | 2 KB | 简要说明 | ⭐⭐⭐⭐ |
 | 快速指南.md | 2 KB | 5分钟上手 | ⭐⭐⭐⭐ |
 | 详细教程.md | 12 KB | 完整教程 | ⭐⭐⭐⭐ |
@@ -68,7 +68,7 @@ git push origin v0.1.0
 
 # 2. 在 GitHub 上创建 Release
 # 访问: https://github.com/yourusername/fieldnote/releases/new
-# 上传: Fieldnote-0.1.0-macOS-Complete.tar.gz
+# 上传: Fieldnotes-0.1.0-macOS-Complete.tar.gz
 ```
 
 ### 方式 2: 网盘分享
@@ -81,11 +81,11 @@ git push origin v0.1.0
 
 **分享链接**，并说明：
 ```
-Fieldnote Lite v0.1.0 - 田野笔记管理工具
+Fieldnotes Lite v0.1.0 - 田野笔记管理工具
 
 下载: [网盘链接]
 
-解压后双击 Fieldnote.app 即可使用
+解压后双击 Fieldnotes.app 即可使用
 详细说明请看"使用说明.txt"
 ```
 
@@ -100,7 +100,7 @@ Fieldnote Lite v0.1.0 - 田野笔记管理工具
 ### 简短版（适合聊天/邮件）
 
 ```
-Fieldnote Lite v0.1.0 已发布！
+Fieldnotes Lite v0.1.0 已发布！
 
 ✨ 功能：
 - 田野笔记录入和管理
@@ -112,7 +112,7 @@ Fieldnote Lite v0.1.0 已发布！
 
 🚀 使用：
 1. 下载并解压
-2. 双击 Fieldnote.app
+2. 双击 Fieldnotes.app
 3. 开始使用！
 
 📖 文档：
@@ -137,7 +137,7 @@ Fieldnote Lite v0.1.0 已发布！
 
 ### 给完全不懂电脑的语言学家
 **推荐**: 
-1. 分享 `Fieldnote-0.1.0-macOS-Complete.tar.gz`
+1. 分享 `Fieldnotes-0.1.0-macOS-Complete.tar.gz`
 2. 让他们阅读"使用说明.txt"
 3. 提供您的联系方式以备求助
 
@@ -188,8 +188,8 @@ Fieldnote Lite v0.1.0 已发布！
    ```bash
    # 解压测试
    cd ~/Downloads
-   tar -xzf Fieldnote-0.1.0-macOS-Complete.tar.gz
-   open Fieldnote.app
+   tar -xzf Fieldnotes-0.1.0-macOS-Complete.tar.gz
+   open Fieldnotes.app
    ```
 
 2. **在其他 Mac 上测试**
@@ -254,7 +254,7 @@ Fieldnote Lite v0.1.0 已发布！
 
 ## 🎉 恭喜！
 
-**Fieldnote Lite 已经完全准备好分发了！**
+**Fieldnotes Lite 已经完全准备好分发了！**
 
 现在您可以：
 1. 创建 GitHub Release

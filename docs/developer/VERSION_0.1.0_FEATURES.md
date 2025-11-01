@@ -1,4 +1,4 @@
-# Fieldnote Lite v0.1.0 - 功能清单
+# Fieldnotes Lite v0.1.0 - 功能清单
 
 **发布日期**: 2025-10-20  
 **版本**: 0.1.0  
@@ -74,8 +74,8 @@
 ## 📦 分发文件
 
 ### 主文件
-- **Fieldnote.app** - macOS 应用程序（121 MB）
-- **Fieldnote-0.1.0-macOS-Complete.tar.gz** - 完整分发包（47 MB）
+- **Fieldnotes.app** - macOS 应用程序（121 MB）
+- **Fieldnotes-0.1.0-macOS-Complete.tar.gz** - 完整分发包（47 MB）
 
 ### 文档
 - **使用说明.txt** - 快速参考指南
@@ -209,11 +209,11 @@
 
 ### 下载链接
 - GitHub Releases: https://github.com/yourusername/fieldnote/releases/v0.1.0
-- 文件: Fieldnote-0.1.0-macOS-Complete.tar.gz (47 MB)
+- 文件: Fieldnotes-0.1.0-macOS-Complete.tar.gz (47 MB)
 
 ### 安装步骤
 1. 下载并解压
-2. 双击 Fieldnote.app
+2. 双击 Fieldnotes.app
 3. 首次启动：右键 → 打开
 4. 开始使用！
 
@@ -227,5 +227,5 @@
 
 ---
 
-**Fieldnote Lite v0.1.0 - 让田野笔记管理更简单！** 🎓📝
+**Fieldnotes Lite v0.1.0 - 让田野笔记管理更简单！** 🎓📝
 

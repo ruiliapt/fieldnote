@@ -38,7 +38,7 @@
 ### 基础用法
 
 1. **打开程序**
-   - 启动 Fieldnote Lite
+   - 启动 Fieldnotes Lite
    - 确保有数据库打开
 
 2. **执行另存为**
@@ -259,5 +259,5 @@
 
 ---
 
-**功能文档** - Fieldnote Lite v0.1.1
+**功能文档** - Fieldnotes Lite v0.1.1
 
