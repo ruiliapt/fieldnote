@@ -1,5 +1,5 @@
 """
-Fieldnote Lite - 主程序
+Fieldnotes Lite - 主程序
 田野笔记管理与导出工具
 """
 import sys
