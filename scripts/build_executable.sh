@@ -6,10 +6,27 @@ echo "  Fieldnotes Lite - 构建可执行文件"
 echo "=========================================="
 echo ""
 
-# 检查 PyInstaller
+# 检查并安装 PyInstaller
+echo "检查 PyInstaller..."
 if ! poetry run python -c "import PyInstaller" 2>/dev/null; then
-    echo "安装 PyInstaller..."
-    poetry add --group dev pyinstaller
+    echo "⚠️  PyInstaller 未找到，尝试安装..."
+    
+    # 在 CI 环境中使用 pip 直接安装到虚拟环境
+    if [ -n "$CI" ]; then
+        echo "CI 环境检测到，使用 pip 安装..."
+        poetry run pip install pyinstaller
+    else
+        poetry add --group dev pyinstaller
+    fi
+    
+    # 再次检查
+    if ! poetry run python -c "import PyInstaller" 2>/dev/null; then
+        echo "❌ PyInstaller 安装失败！"
+        exit 1
+    fi
+    echo "✅ PyInstaller 安装成功"
+else
+    echo "✅ PyInstaller 已安装"
 fi
 
 # 清理旧的构建（保留 spec 文件）
