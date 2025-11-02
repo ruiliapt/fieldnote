@@ -435,19 +435,30 @@ class WordExporter:
                     if numbering_text:
                         cell = table.rows[0].cells[0]
                         cell.text = numbering_text
-                        # 设置单元格垂直对齐为顶部
+                        # 设置单元格属性
                         tc = cell._tc
                         tcPr = tc.get_or_add_tcPr()
+                        
+                        # 垂直对齐为顶部
                         vAlign = OxmlElement('w:vAlign')
                         vAlign.set(qn('w:val'), 'top')
                         tcPr.append(vAlign)
-                        # 设置单元格格式
+                        
+                        # 设置单元格边距（上下为0）
+                        tcMar = OxmlElement('w:tcMar')
+                        for side in ['top', 'bottom']:
+                            margin = OxmlElement(f'w:{side}')
+                            margin.set(qn('w:w'), '0')
+                            margin.set(qn('w:type'), 'dxa')
+                            tcMar.append(margin)
+                        tcPr.append(tcMar)
+                        
+                        # 设置段落格式
                         for paragraph in cell.paragraphs:
                             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                            # 设置段落间距为0（紧凑排列）
                             paragraph.paragraph_format.space_before = Pt(0)
                             paragraph.paragraph_format.space_after = Pt(0)
-                            paragraph.paragraph_format.line_spacing = 1.0  # 单倍行距
+                            paragraph.paragraph_format.line_spacing = 1.0
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
@@ -455,19 +466,30 @@ class WordExporter:
                     for col_idx, word in enumerate(source_words):
                         cell = table.rows[0].cells[col_idx + 1]
                         cell.text = word
-                        # 设置单元格垂直对齐为顶部
+                        # 设置单元格属性
                         tc = cell._tc
                         tcPr = tc.get_or_add_tcPr()
+                        
+                        # 垂直对齐为顶部
                         vAlign = OxmlElement('w:vAlign')
                         vAlign.set(qn('w:val'), 'top')
                         tcPr.append(vAlign)
-                        # 设置单元格格式
+                        
+                        # 设置单元格边距（上下为0）
+                        tcMar = OxmlElement('w:tcMar')
+                        for side in ['top', 'bottom']:
+                            margin = OxmlElement(f'w:{side}')
+                            margin.set(qn('w:w'), '0')
+                            margin.set(qn('w:type'), 'dxa')
+                            tcMar.append(margin)
+                        tcPr.append(tcMar)
+                        
+                        # 设置段落格式
                         for paragraph in cell.paragraphs:
                             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                            # 设置段落间距为0（紧凑排列）
                             paragraph.paragraph_format.space_before = Pt(0)
                             paragraph.paragraph_format.space_after = Pt(0)
-                            paragraph.paragraph_format.line_spacing = 1.0  # 单倍行距
+                            paragraph.paragraph_format.line_spacing = 1.0
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
@@ -479,19 +501,30 @@ class WordExporter:
                     for col_idx, word in enumerate(gloss_words):
                         cell = table.rows[1].cells[col_idx + 1]
                         cell.text = word
-                        # 设置单元格垂直对齐为顶部
+                        # 设置单元格属性
                         tc = cell._tc
                         tcPr = tc.get_or_add_tcPr()
+                        
+                        # 垂直对齐为顶部
                         vAlign = OxmlElement('w:vAlign')
                         vAlign.set(qn('w:val'), 'top')
                         tcPr.append(vAlign)
-                        # 设置单元格格式
+                        
+                        # 设置单元格边距（上下为0）
+                        tcMar = OxmlElement('w:tcMar')
+                        for side in ['top', 'bottom']:
+                            margin = OxmlElement(f'w:{side}')
+                            margin.set(qn('w:w'), '0')
+                            margin.set(qn('w:type'), 'dxa')
+                            tcMar.append(margin)
+                        tcPr.append(tcMar)
+                        
+                        # 设置段落格式
                         for paragraph in cell.paragraphs:
                             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                            # 设置段落间距为0（紧凑排列）
                             paragraph.paragraph_format.space_before = Pt(0)
                             paragraph.paragraph_format.space_after = Pt(0)
-                            paragraph.paragraph_format.line_spacing = 1.0  # 单倍行距
+                            paragraph.paragraph_format.line_spacing = 1.0
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
@@ -506,18 +539,30 @@ class WordExporter:
                             merged_cell.merge(table.rows[2].cells[col_idx])
                         
                         merged_cell.text = f"'{translation}'"
-                        # 设置单元格垂直对齐为顶部
+                        # 设置单元格属性
                         tc = merged_cell._tc
                         tcPr = tc.get_or_add_tcPr()
+                        
+                        # 垂直对齐为顶部
                         vAlign = OxmlElement('w:vAlign')
                         vAlign.set(qn('w:val'), 'top')
                         tcPr.append(vAlign)
+                        
+                        # 设置单元格边距（上下为0）
+                        tcMar = OxmlElement('w:tcMar')
+                        for side in ['top', 'bottom']:
+                            margin = OxmlElement(f'w:{side}')
+                            margin.set(qn('w:w'), '0')
+                            margin.set(qn('w:type'), 'dxa')
+                            tcMar.append(margin)
+                        tcPr.append(tcMar)
+                        
+                        # 设置段落格式
                         for paragraph in merged_cell.paragraphs:
                             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                            # 设置段落间距为0（紧凑排列）
                             paragraph.paragraph_format.space_before = Pt(0)
                             paragraph.paragraph_format.space_after = Pt(0)
-                            paragraph.paragraph_format.line_spacing = 1.0  # 单倍行距
+                            paragraph.paragraph_format.line_spacing = 1.0
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
