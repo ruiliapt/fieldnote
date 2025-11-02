@@ -30,7 +30,7 @@ poetry --version
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/ruiliapt/fieldnote.git
+git clone https://github.com/ruiliapt/fieldnotes.git
 cd fieldnote
 
 # 2. 安装依赖
@@ -71,7 +71,7 @@ poetry --version
 
 ```powershell
 # 1. 克隆仓库
-git clone https://github.com/ruiliapt/fieldnote.git
+git clone https://github.com/ruiliapt/fieldnotes.git
 cd fieldnote
 
 # 2. 安装依赖
@@ -142,7 +142,7 @@ curl -sSL https://install.python-poetry.org | python3 -
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/ruiliapt/fieldnote.git
+git clone https://github.com/ruiliapt/fieldnotes.git
 cd fieldnote
 
 # 2. 安装依赖

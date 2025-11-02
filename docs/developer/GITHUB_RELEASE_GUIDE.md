@@ -130,7 +130,7 @@ gh release upload v0.1.0 \
 
 1. **访问 Releases 页面**
    ```
-   https://github.com/ruiliapt/fieldnote/releases/new
+   https://github.com/ruiliapt/fieldnotes/releases/new
    ```
 
 2. **填写信息**
@@ -179,8 +179,8 @@ gh release upload v0.1.0 \
 
 ### 📖 文档
 
-- [README](https://github.com/ruiliapt/fieldnote)
-- [用户指南](https://github.com/ruiliapt/fieldnote/blob/main/docs/user/USER_GUIDE_NON_TECHNICAL.md)
+- [README](https://github.com/ruiliapt/fieldnotes)
+- [用户指南](https://github.com/ruiliapt/fieldnotes/blob/main/docs/user/USER_GUIDE_NON_TECHNICAL.md)
 
 ### 🐛 已知问题
 
@@ -189,11 +189,11 @@ gh release upload v0.1.0 \
 
 ### 🙏 反馈
 
-欢迎提交 [Issue](https://github.com/ruiliapt/fieldnote/issues)
+欢迎提交 [Issue](https://github.com/ruiliapt/fieldnotes/issues)
 
 ---
 
-**完整更新日志**: [CHANGELOG.md](https://github.com/ruiliapt/fieldnote/blob/main/docs/developer/CHANGELOG.md)
+**完整更新日志**: [CHANGELOG.md](https://github.com/ruiliapt/fieldnotes/blob/main/docs/developer/CHANGELOG.md)
 ```
 
 ---

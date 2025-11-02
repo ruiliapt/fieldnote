@@ -312,7 +312,7 @@ journalctl | grep -i fieldnote
    - 预期结果 vs 实际结果
 
 5. **提交到**:
-   https://github.com/ruiliapt/fieldnote/issues
+   https://github.com/ruiliapt/fieldnotes/issues
 
 ---
 
@@ -320,9 +320,9 @@ journalctl | grep -i fieldnote
 
 ### 在线资源
 
-- **GitHub Issues**: https://github.com/ruiliapt/fieldnote/issues
-- **Discussions**: https://github.com/ruiliapt/fieldnote/discussions
-- **文档**: https://github.com/ruiliapt/fieldnote/tree/main/docs
+- **GitHub Issues**: https://github.com/ruiliapt/fieldnotes/issues
+- **Discussions**: https://github.com/ruiliapt/fieldnotes/discussions
+- **文档**: https://github.com/ruiliapt/fieldnotes/tree/main/docs
 
 ### 临时解决方案
 
@@ -330,7 +330,7 @@ journalctl | grep -i fieldnote
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/ruiliapt/fieldnote.git
+git clone https://github.com/ruiliapt/fieldnotes.git
 cd fieldnote
 
 # 2. 安装依赖

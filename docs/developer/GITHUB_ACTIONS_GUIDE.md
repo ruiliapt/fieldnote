@@ -105,7 +105,7 @@ Fieldnotes-Linux-x86_64.tar.gz.sha256  # Linux 校验和
 
 ### 1. 通过 GitHub Actions 页面
 
-访问：`https://github.com/ruiliapt/fieldnote/actions`
+访问：`https://github.com/ruiliapt/fieldnotes/actions`
 
 可以看到：
 - ✅ 成功的构建（绿色）
@@ -117,7 +117,7 @@ Fieldnotes-Linux-x86_64.tar.gz.sha256  # Linux 校验和
 在 README 中添加徽章显示构建状态：
 
 ```markdown
-![Build Status](https://github.com/ruiliapt/fieldnote/workflows/Build%20Release/badge.svg)
+![Build Status](https://github.com/ruiliapt/fieldnotes/workflows/Build%20Release/badge.svg)
 ```
 
 ### 3. 查看构建日志
@@ -132,7 +132,7 @@ Fieldnotes-Linux-x86_64.tar.gz.sha256  # Linux 校验和
 
 ### 从 GitHub Release 下载（正式发布）
 
-访问：`https://github.com/ruiliapt/fieldnote/releases`
+访问：`https://github.com/ruiliapt/fieldnotes/releases`
 
 每个 Release 包含：
 - 所有平台的安装包

@@ -2,7 +2,7 @@
 
 田野笔记管理工具
 
-[![Build Release](https://github.com/ruiliapt/fieldnote/workflows/Build%20Release/badge.svg)](https://github.com/ruiliapt/fieldnote/actions)
+[![Build Release](https://github.com/ruiliapt/fieldnotes/workflows/Build%20Release/badge.svg)](https://github.com/ruiliapt/fieldnotes/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
@@ -56,7 +56,7 @@ Fieldnotes Lite 是一个面向语言学研究者的田野笔记管理工具，�
 
 ### 方法1：下载预编译版本 ⭐ 最简单
 
-访问 [Releases 页面](https://github.com/ruiliapt/fieldnote/releases) 下载对应平台的安装包：
+访问 [Releases 页面](https://github.com/ruiliapt/fieldnotes/releases) 下载对应平台的安装包：
 
 - 🪟 **Windows**: `Fieldnotes-Windows.zip` - 解压后直接运行 `Fieldnotes.exe`
 - 🍎 **macOS**: `Fieldnotes-macOS.tar.gz` - 解压后双击 `Fieldnotes.app`
