@@ -380,26 +380,17 @@ class WordExporter:
                         tblBorders.append(border)
                     tblPr.append(tblBorders)
                     
-                    # 设置表格布局为固定宽度（等宽列）
+                    # 设置表格布局为自动宽度（根据内容自适应）
                     tblLayout = OxmlElement('w:tblLayout')
-                    tblLayout.set(qn('w:type'), 'fixed')
+                    tblLayout.set(qn('w:type'), 'auto')  # 自动调整宽度
                     tblPr.append(tblLayout)
                     
-                    # 计算每列的宽度
-                    from docx.shared import Cm
-                    numbering_col_width = Cm(1.2)  # 编号列宽度1.2厘米
-                    total_word_width = Cm(14.8)  # 词列总宽度14.8厘米
-                    word_col_width = total_word_width / max_len  # 每个词列的宽度
-                    
-                    # 设置第0列（编号列）的宽度
-                    for row in table.rows:
-                        row.cells[0].width = numbering_col_width
-                    
-                    # 设置第1到N列（词列）的宽度
-                    for col_idx in range(1, max_len + 1):
-                        for row in table.rows:
-                            cell = row.cells[col_idx]
-                            cell.width = word_col_width
+                    # 设置表格宽度为0（让Word根据内容自动调整）
+                    from docx.shared import Inches
+                    tblW = OxmlElement('w:tblW')
+                    tblW.set(qn('w:w'), '0')
+                    tblW.set(qn('w:type'), 'auto')
+                    tblPr.append(tblW)
                     
                     # 设置所有行为根据内容自动调整高度
                     for row in table.rows:
