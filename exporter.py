@@ -392,6 +392,40 @@ class WordExporter:
                     tblW.set(qn('w:type'), 'auto')
                     tblPr.append(tblW)
                     
+                    # 设置单元格间距为0（消除列间距）
+                    tblCellSpacing = OxmlElement('w:tblCellSpacing')
+                    tblCellSpacing.set(qn('w:w'), '0')
+                    tblCellSpacing.set(qn('w:type'), 'dxa')
+                    tblPr.append(tblCellSpacing)
+                    
+                    # 设置单元格边距（减少内边距）
+                    tblCellMar = OxmlElement('w:tblCellMar')
+                    
+                    # 左边距
+                    left = OxmlElement('w:left')
+                    left.set(qn('w:w'), '50')  # 50 twips = 约0.09cm
+                    left.set(qn('w:type'), 'dxa')
+                    tblCellMar.append(left)
+                    
+                    # 右边距
+                    right = OxmlElement('w:right')
+                    right.set(qn('w:w'), '50')  # 50 twips = 约0.09cm
+                    right.set(qn('w:type'), 'dxa')
+                    tblCellMar.append(right)
+                    
+                    # 上下边距设为0
+                    top = OxmlElement('w:top')
+                    top.set(qn('w:w'), '0')
+                    top.set(qn('w:type'), 'dxa')
+                    tblCellMar.append(top)
+                    
+                    bottom = OxmlElement('w:bottom')
+                    bottom.set(qn('w:w'), '0')
+                    bottom.set(qn('w:type'), 'dxa')
+                    tblCellMar.append(bottom)
+                    
+                    tblPr.append(tblCellMar)
+                    
                     # 设置所有行为根据内容自动调整高度
                     for row in table.rows:
                         tr = row._tr
