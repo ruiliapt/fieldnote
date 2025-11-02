@@ -2,6 +2,10 @@
 
 田野笔记管理工具
 
+[![Build Release](https://github.com/ruiliapt/fieldnote/workflows/Build%20Release/badge.svg)](https://github.com/ruiliapt/fieldnote/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+
 ---
 
 > 💡 **给语言学研究者的提示**
@@ -50,7 +54,17 @@ Fieldnotes Lite 是一个面向语言学研究者的田野笔记管理工具，�
 
 ## 安装
 
-### 方法1：使用 Poetry（推荐）
+### 方法1：下载预编译版本 ⭐ 最简单
+
+访问 [Releases 页面](https://github.com/ruiliapt/fieldnote/releases) 下载对应平台的安装包：
+
+- 🪟 **Windows**: `Fieldnotes-Windows.zip` - 解压后直接运行 `Fieldnotes.exe`
+- 🍎 **macOS**: `Fieldnotes-macOS.tar.gz` - 解压后双击 `Fieldnotes.app`
+- 🐧 **Linux**: `Fieldnotes-Linux-x86_64.tar.gz` - 解压后运行 `./Fieldnotes`
+
+> 💡 预编译版本无需安装 Python 和依赖，下载即用！
+
+### 方法2：使用 Poetry（开发者）
 
 1. 安装 Poetry（如果尚未安装）：
 ```bash
@@ -273,7 +287,8 @@ A: 这可能是锁文件残留。运行 `./stop.sh`（macOS/Linux）或 `stop.ba
 
 ### 开发者文档
 
-- [跨平台打包指南](docs/developer/CROSS_PLATFORM_BUILD.md) ⭐ Windows/Linux/macOS 打包
+- [GitHub Actions 自动构建](docs/developer/GITHUB_ACTIONS_GUIDE.md) ⭐ 自动化跨平台打包
+- [跨平台打包指南](docs/developer/CROSS_PLATFORM_BUILD.md) - Windows/Linux/macOS 手动打包
 - [发布指南](docs/developer/PUBLISHING.md) - 如何发布新版本
 - [快速发布](docs/developer/RELEASE_QUICKSTART.md) - 发布命令速查
 - [项目概览](docs/developer/PROJECT_OVERVIEW.md) - 技术架构说明

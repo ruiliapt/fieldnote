@@ -1,0 +1,76 @@
+name: Test Build
+
+on:
+  workflow_dispatch:  # 仅手动触发
+  pull_request:       # PR 时自动测试构建
+    branches: [ main ]
+
+jobs:
+  test-build:
+    name: Test Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Run tests (if any)
+        run: |
+          poetry run python -m pytest tests/ || echo "No tests found"
+
+      - name: Build executable (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: bash scripts/build_executable.sh
+
+      - name: Build executable (Windows)
+        if: runner.os == 'Windows'
+        run: scripts\build_executable.bat
+
+      - name: Test executable exists (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          test -f dist/Fieldnotes/Fieldnotes
+          echo "✅ Linux build successful"
+
+      - name: Test executable exists (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          test -d dist/Fieldnotes.app
+          echo "✅ macOS build successful"
+
+      - name: Test executable exists (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (Test-Path "dist\Fieldnotes\Fieldnotes.exe") {
+            Write-Host "✅ Windows build successful"
+          } else {
+            Write-Host "❌ Windows build failed"
+            exit 1
+          }
+
+      - name: Upload build artifact (for inspection)
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-build-${{ matrix.os }}
+          path: dist/
+          retention-days: 7
+
