@@ -390,30 +390,42 @@ A: 这可能是锁文件残留。运行 `./stop.sh`（macOS/Linux）或 `stop.ba
 
 本项目采用 MIT 许可证。
 
-## 贡献
+## 📚 文档索引
 
-欢迎提交问题报告和改进建议！
+### 🎓 语言学研究者（非技术用户）
 
-### 开发者文档
+**新手必读**：
+- **[一页纸快速指南](docs/user/ONE_PAGE_GUIDE.md)** ⭐ 5分钟快速上手
+- **[非技术用户使用指南](docs/user/USER_GUIDE_NON_TECHNICAL.md)** ⭐ 详细图文教程
 
+**功能说明**：
+- [快速开始](docs/developer/QUICKSTART.md) - 功能介绍
+- [对齐技巧](docs/guides/ALIGNMENT_TIPS.md) - 如何对齐语料
+- [导出格式指南](docs/guides/EXPORT_FORMAT_GUIDE.md) - Word导出格式说明
+
+### 👨‍💻 开发者/技术用户
+
+**安装与配置**：
+- [安装指南](docs/developer/INSTALL.md) - 详细安装步骤
+- [项目概览](docs/developer/PROJECT_OVERVIEW.md) - 技术架构
+- [跨平台支持](docs/developer/PLATFORM_SUPPORT.md) - 平台兼容性
+
+**构建与发布**：
 - [GitHub Actions 自动构建](docs/developer/GITHUB_ACTIONS_GUIDE.md) ⭐ 自动化跨平台打包
 - [跨平台打包指南](docs/developer/CROSS_PLATFORM_BUILD.md) - Windows/Linux/macOS 手动打包
 - [发布指南](docs/developer/PUBLISHING.md) - 如何发布新版本
 - [快速发布](docs/developer/RELEASE_QUICKSTART.md) - 发布命令速查
-- [项目概览](docs/developer/PROJECT_OVERVIEW.md) - 技术架构说明
 
-## 面向不同用户的文档
+**其他文档**：
+- [文档索引](docs/DOCS_INDEX.md) - 完整文档列表
+- [更新日志](CHANGELOG_v0.2.0.md) - v0.2.0 版本更新内容
+- [故障排查](docs/TROUBLESHOOTING.md) - 常见问题解决
 
-### 🎓 语言学研究者（非技术用户）
-- **[一页纸快速指南](docs/user/ONE_PAGE_GUIDE.md)** ⭐ 5分钟快速上手
-- **[非技术用户使用指南](docs/user/USER_GUIDE_NON_TECHNICAL.md)** ⭐ 详细图文教程
-- [快速开始](docs/developer/QUICKSTART.md) - 功能介绍
+## 贡献
 
-### 👨‍💻 技术用户/开发者
-- [安装指南](docs/developer/INSTALL.md) - 详细安装说明
-- [项目概览](docs/developer/PROJECT_OVERVIEW.md) - 技术架构
-- [跨平台支持](docs/developer/PLATFORM_SUPPORT.md) - 平台兼容性
-- [发布指南](docs/developer/PUBLISHING.md) - 如何发布软件
+欢迎提交问题报告和改进建议！请查看：
+- [项目结构](PROJECT_STRUCTURE.md) - 代码组织说明
+- [核心优势](docs/CORE_ADVANTAGES.md) - 项目定位和特色
 
 ## 联系方式
 
