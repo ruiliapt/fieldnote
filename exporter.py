@@ -398,31 +398,15 @@ class WordExporter:
                     tblCellSpacing.set(qn('w:type'), 'dxa')
                     tblPr.append(tblCellSpacing)
                     
-                    # 设置单元格边距（减少内边距）
+                    # 设置单元格边距为自动（让Word根据字体和内容自适应）
                     tblCellMar = OxmlElement('w:tblCellMar')
                     
-                    # 左边距
-                    left = OxmlElement('w:left')
-                    left.set(qn('w:w'), '50')  # 50 twips = 约0.09cm
-                    left.set(qn('w:type'), 'dxa')
-                    tblCellMar.append(left)
-                    
-                    # 右边距
-                    right = OxmlElement('w:right')
-                    right.set(qn('w:w'), '50')  # 50 twips = 约0.09cm
-                    right.set(qn('w:type'), 'dxa')
-                    tblCellMar.append(right)
-                    
-                    # 上下边距设为0
-                    top = OxmlElement('w:top')
-                    top.set(qn('w:w'), '0')
-                    top.set(qn('w:type'), 'dxa')
-                    tblCellMar.append(top)
-                    
-                    bottom = OxmlElement('w:bottom')
-                    bottom.set(qn('w:w'), '0')
-                    bottom.set(qn('w:type'), 'dxa')
-                    tblCellMar.append(bottom)
+                    # 所有边距使用auto类型，让Word自动计算
+                    for side in ['left', 'right', 'top', 'bottom']:
+                        margin = OxmlElement(f'w:{side}')
+                        margin.set(qn('w:w'), '0')
+                        margin.set(qn('w:type'), 'auto')  # 自动调整
+                        tblCellMar.append(margin)
                     
                     tblPr.append(tblCellMar)
                     
