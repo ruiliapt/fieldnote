@@ -4,6 +4,8 @@
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
 from typing import List, Dict
 
 
@@ -291,13 +293,89 @@ class WordExporter:
         """初始化导出器"""
         self.doc = Document()
     
+    def _set_cell_properties(self, cell, font_size, is_content_cell=True, font_name=None):
+        """设置单元格的XML属性和段落格式
+        
+        Args:
+            cell: 单元格对象
+            font_size: 字体大小
+            is_content_cell: 是否是内容单元格（有文字的），空单元格不设置字体
+            font_name: 字体名称（可选）
+        """
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+        tcW = OxmlElement('w:tcW')
+        tcW.set(qn('w:w'), '0')
+        tcW.set(qn('w:type'), 'auto')
+        tcPr.append(tcW)
+        vAlign = OxmlElement('w:vAlign')
+        vAlign.set(qn('w:val'), 'top')
+        tcPr.append(vAlign)
+        tcMar = OxmlElement('w:tcMar')
+        for side in ['top', 'bottom', 'left', 'right']:
+            margin = OxmlElement(f'w:{side}')
+            margin.set(qn('w:w'), '0')
+            margin.set(qn('w:type'), 'dxa')
+            tcMar.append(margin)
+        tcPr.append(tcMar)
+        
+        for paragraph in cell.paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            paragraph.paragraph_format.space_before = Pt(0)
+            paragraph.paragraph_format.space_after = Pt(0)
+            paragraph.paragraph_format.line_spacing = 1.0
+            if is_content_cell:
+                for run in paragraph.runs:
+                    run.font.size = Pt(font_size)
+                    if font_name and font_name != "系统默认":
+                        run.font.name = font_name
+    
+    def _split_words_by_width(self, words: List[str], max_width: int = 80) -> List[List[str]]:
+        """根据显示宽度自动将词分行
+        
+        Args:
+            words: 词列表
+            max_width: 每行最大显示宽度（等宽字体字符数）
+            
+        Returns:
+            分行后的词列表，每个子列表代表一行
+        """
+        if not words:
+            return [[]]
+        
+        lines = []
+        current_line = []
+        current_width = 0
+        
+        for word in words:
+            word_width = TextFormatter.calculate_display_width(word)
+            # 每个词之间留一个空格的宽度（约2个字符）
+            space_width = 2 if current_line else 0
+            
+            if current_width + space_width + word_width > max_width and current_line:
+                # 当前行放不下了，开始新行
+                lines.append(current_line)
+                current_line = [word]
+                current_width = word_width
+            else:
+                # 当前行还能放下
+                current_line.append(word)
+                current_width += space_width + word_width
+        
+        if current_line:
+            lines.append(current_line)
+        
+        return lines if lines else [[]]
+    
     def export(self, entries: List[Dict], output_path: str, 
                table_width: float = 5.0,
                font_size: int = 10,
                line_spacing: float = 1.15,
                show_numbering: bool = True,
                entries_per_page: int = 10,
-               include_chinese: bool = False) -> bool:
+               include_chinese: bool = False,
+               max_words_per_line: int = 10,
+               font_config: Dict = None) -> bool:
         """
         导出语料到Word文档（词对词对齐，透明表格）
         
@@ -310,13 +388,25 @@ class WordExporter:
             show_numbering: 是否显示编号
             entries_per_page: 每页语料数（暂未实现分页）
             include_chinese: 是否包含汉字注释字段
+            font_config: 字体配置字典，包含各字段的字体名称和大小
             
         Returns:
             是否导出成功
         """
         try:
-            from docx.oxml.ns import qn
-            from docx.oxml import OxmlElement
+            # 初始化字体配置
+            if font_config is None:
+                font_config = {}
+            
+            # 设置默认字体配置
+            source_font = font_config.get("source_text", "Doulos SIL Compact")
+            source_size = font_config.get("source_text_size", 12)
+            gloss_font = font_config.get("gloss", "Charis SIL Compact")
+            gloss_size = font_config.get("gloss_size", 11)
+            translation_font = font_config.get("translation", None)
+            translation_size = font_config.get("translation_size", 11)
+            chinese_font = font_config.get("chinese", None)
+            chinese_size = font_config.get("chinese_size", 10)
             
             self.doc = Document()
             
@@ -353,23 +443,56 @@ class WordExporter:
                         source_words[-2] = source_words[-2] + '.'
                         source_words.pop()
                     
-                    # 确保词数相同
-                    max_len = max(len(source_words), len(gloss_words))
-                    source_words = source_words + [''] * (max_len - len(source_words))
-                    gloss_words = gloss_words + [''] * (max_len - len(gloss_words))
+                    # 分词处理汉字字段
+                    source_words_cn = source_text_cn.split() if (include_chinese and source_text_cn) else []
+                    gloss_words_cn = gloss_cn.split() if (include_chinese and gloss_cn) else []
                     
-                    # 创建透明表格：3行 x (N+1)列
-                    # 第0列用于编号，第1到N列用于词对齐
-                    table = self.doc.add_table(rows=3, cols=max_len + 1)
+                    # 根据显示宽度自动分行
+                    max_line_width = 80  # 每行最大显示宽度（等宽字体字符数）
+                    source_lines_list = self._split_words_by_width(source_words, max_line_width)
+                    gloss_lines_list = self._split_words_by_width(gloss_words, max_line_width)
                     
-                    # 移除所有边框（透明表格）
+                    # 汉字字段也进行分行（和原文/gloss保持相同的分行方式）
+                    source_cn_lines_list = self._split_words_by_width(source_words_cn, max_line_width) if source_words_cn else []
+                    gloss_cn_lines_list = self._split_words_by_width(gloss_words_cn, max_line_width) if gloss_words_cn else []
+                    
+                    # 计算表格尺寸
+                    source_line_count = len(source_lines_list)
+                    gloss_line_count = len(gloss_lines_list)
+                    
+                    # 计算总行数：原文 + 原文(汉字) + gloss + gloss(汉字) + 翻译 + 翻译(汉字)
+                    total_rows = source_line_count + gloss_line_count + 1  # 原文 + gloss + 翻译
+                    if include_chinese:
+                        if source_words_cn:
+                            total_rows += len(source_cn_lines_list)  # 原文(汉字)行数与原文相同
+                        if gloss_words_cn:
+                            total_rows += len(gloss_cn_lines_list)  # 词汇分解(汉字)行数与gloss相同
+                        if translation_cn:
+                            total_rows += 1  # 翻译(汉字)单行合并
+                    
+                    # 找出所有行中最长的一行（词数最多）
+                    all_line_lists = [source_lines_list, gloss_lines_list]
+                    if source_cn_lines_list:
+                        all_line_lists.append(source_cn_lines_list)
+                    if gloss_cn_lines_list:
+                        all_line_lists.append(gloss_cn_lines_list)
+                    
+                    max_cols_in_line = max(
+                        max(len(line) for line in line_list)
+                        for line_list in all_line_lists
+                    )
+                    table_cols = max_cols_in_line + 1  # +1 for numbering column
+                    
+                    table = self.doc.add_table(rows=total_rows, cols=table_cols)
+                    
+                    # 设置表格属性
                     tbl = table._tbl
                     tblPr = tbl.tblPr
                     if tblPr is None:
                         tblPr = OxmlElement('w:tblPr')
                         tbl.insert(0, tblPr)
                     
-                    # 设置边框为无
+                    # 设置无边框
                     tblBorders = OxmlElement('w:tblBorders')
                     for border_name in ['top', 'left', 'bottom', 'right', 'insideH', 'insideV']:
                         border = OxmlElement(f'w:{border_name}')
@@ -380,233 +503,152 @@ class WordExporter:
                         tblBorders.append(border)
                     tblPr.append(tblBorders)
                     
-                    # 设置表格布局为自动宽度（根据内容自适应）
+                    # 表格布局：自适应
                     tblLayout = OxmlElement('w:tblLayout')
-                    tblLayout.set(qn('w:type'), 'auto')  # 自动调整宽度
+                    tblLayout.set(qn('w:type'), 'auto')
                     tblPr.append(tblLayout)
                     
-                    # 设置表格宽度为0（让Word根据内容自动调整）
-                    from docx.shared import Inches
+                    # 表格宽度：自适应
                     tblW = OxmlElement('w:tblW')
                     tblW.set(qn('w:w'), '0')
                     tblW.set(qn('w:type'), 'auto')
                     tblPr.append(tblW)
                     
-                    # 设置单元格间距为0（消除列间距）
+                    # 单元格间距：0
                     tblCellSpacing = OxmlElement('w:tblCellSpacing')
                     tblCellSpacing.set(qn('w:w'), '0')
                     tblCellSpacing.set(qn('w:type'), 'dxa')
                     tblPr.append(tblCellSpacing)
                     
-                    # 设置单元格边距
+                    # 单元格边距
                     tblCellMar = OxmlElement('w:tblCellMar')
-                    
-                    # 左右边距自动调整（根据字体）
                     for side in ['left', 'right']:
                         margin = OxmlElement(f'w:{side}')
-                        margin.set(qn('w:w'), '0')
-                        margin.set(qn('w:type'), 'auto')
+                        margin.set(qn('w:w'), '50')
+                        margin.set(qn('w:type'), 'dxa')
                         tblCellMar.append(margin)
-                    
-                    # 上下边距设为0（紧凑排列）
                     for side in ['top', 'bottom']:
                         margin = OxmlElement(f'w:{side}')
                         margin.set(qn('w:w'), '0')
-                        margin.set(qn('w:type'), 'dxa')  # dxa表示固定值
+                        margin.set(qn('w:type'), 'dxa')
                         tblCellMar.append(margin)
-                    
                     tblPr.append(tblCellMar)
                     
-                    # 设置所有行为根据内容自动调整高度
+                    # 设置所有行自动调整高度
                     for row in table.rows:
                         tr = row._tr
                         trPr = tr.get_or_add_trPr()
-                        # 移除固定高度设置（如果有）
                         trHeight = trPr.find(qn('w:trHeight'))
                         if trHeight is not None:
                             trPr.remove(trHeight)
-                        # 添加自动调整高度设置
                         trHeight = OxmlElement('w:trHeight')
-                        trHeight.set(qn('w:hRule'), 'auto')  # 根据内容自动调整
+                        trHeight.set(qn('w:hRule'), 'auto')
                         trPr.append(trHeight)
                     
-                    # 填充第一行（原文）
-                    # 第0列：编号
-                    if numbering_text:
-                        cell = table.rows[0].cells[0]
-                        cell.text = numbering_text
-                        # 设置单元格属性
-                        tc = cell._tc
-                        tcPr = tc.get_or_add_tcPr()
-                        
-                        # 垂直对齐为顶部
-                        vAlign = OxmlElement('w:vAlign')
-                        vAlign.set(qn('w:val'), 'top')
-                        tcPr.append(vAlign)
-                        
-                        # 设置单元格边距（上下为0）
-                        tcMar = OxmlElement('w:tcMar')
-                        for side in ['top', 'bottom']:
-                            margin = OxmlElement(f'w:{side}')
-                            margin.set(qn('w:w'), '0')
-                            margin.set(qn('w:type'), 'dxa')
-                            tcMar.append(margin)
-                        tcPr.append(tcMar)
-                        
-                        # 设置段落格式
-                        for paragraph in cell.paragraphs:
-                            paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                            paragraph.paragraph_format.space_before = Pt(0)
-                            paragraph.paragraph_format.space_after = Pt(0)
-                            paragraph.paragraph_format.line_spacing = 1.0
-                            for run in paragraph.runs:
-                                run.font.size = Pt(font_size)
+                    # 关键：清空所有行的所有单元格
+                    for row_idx in range(total_rows):
+                        for cell in table.rows[row_idx].cells:
+                            cell._element.clear_content()
+                            cell.text = ''  # 添加空段落
                     
-                    # 第1到N列：原文词
-                    for col_idx, word in enumerate(source_words):
-                        cell = table.rows[0].cells[col_idx + 1]
-                        cell.text = word
-                        # 设置单元格属性
-                        tc = cell._tc
-                        tcPr = tc.get_or_add_tcPr()
-                        
-                        # 垂直对齐为顶部
-                        vAlign = OxmlElement('w:vAlign')
-                        vAlign.set(qn('w:val'), 'top')
-                        tcPr.append(vAlign)
-                        
-                        # 设置单元格边距（上下为0）
-                        tcMar = OxmlElement('w:tcMar')
-                        for side in ['top', 'bottom']:
-                            margin = OxmlElement(f'w:{side}')
-                            margin.set(qn('w:w'), '0')
-                            margin.set(qn('w:type'), 'dxa')
-                            tcMar.append(margin)
-                        tcPr.append(tcMar)
-                        
-                        # 设置段落格式
-                        for paragraph in cell.paragraphs:
-                            paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                            paragraph.paragraph_format.space_before = Pt(0)
-                            paragraph.paragraph_format.space_after = Pt(0)
-                            paragraph.paragraph_format.line_spacing = 1.0
-                            for run in paragraph.runs:
-                                run.font.size = Pt(font_size)
+                    # 追踪当前填充到哪一行
+                    current_row = 0
                     
-                    # 填充第二行（注释）
-                    # 第0列：留空（与编号列对齐）
-                    empty_cell = table.rows[1].cells[0]
-                    empty_cell.text = ''
-                    # 设置空单元格的边距
-                    tc = empty_cell._tc
-                    tcPr = tc.get_or_add_tcPr()
-                    tcMar = OxmlElement('w:tcMar')
-                    for side in ['top', 'bottom']:
-                        margin = OxmlElement(f'w:{side}')
-                        margin.set(qn('w:w'), '0')
-                        margin.set(qn('w:type'), 'dxa')
-                        tcMar.append(margin)
-                    tcPr.append(tcMar)
+                    # 填充原文（多行，自动换行）
+                    for line_idx, line_words in enumerate(source_lines_list):
+                        # 第0列：第一行放编号，其他行留空
+                        cell = table.rows[current_row].cells[0]
+                        if line_idx == 0 and numbering_text:
+                            cell.text = numbering_text
+                            self._set_cell_properties(cell, source_size, is_content_cell=True, font_name=source_font)
+                        else:
+                            cell.text = ''
+                            self._set_cell_properties(cell, source_size, is_content_cell=False)
+                        
+                        # 第1到N列：填充这一行的词
+                        for col_idx, word in enumerate(line_words):
+                            cell = table.rows[current_row].cells[col_idx + 1]
+                            cell.text = word
+                            self._set_cell_properties(cell, source_size, is_content_cell=True, font_name=source_font)
+                        
+                        current_row += 1
                     
-                    # 第1到N列：gloss词（与原文词对齐）
-                    for col_idx, word in enumerate(gloss_words):
-                        cell = table.rows[1].cells[col_idx + 1]
-                        cell.text = word
-                        # 设置单元格属性
-                        tc = cell._tc
-                        tcPr = tc.get_or_add_tcPr()
+                    # 填充原文(汉字)（多行，自动换行，每个词一个单元格）
+                    for line_idx, line_words in enumerate(source_cn_lines_list):
+                        # 第0列：留空
+                        cell = table.rows[current_row].cells[0]
+                        cell.text = ''
+                        self._set_cell_properties(cell, chinese_size, is_content_cell=False)
                         
-                        # 垂直对齐为顶部
-                        vAlign = OxmlElement('w:vAlign')
-                        vAlign.set(qn('w:val'), 'top')
-                        tcPr.append(vAlign)
+                        # 第1到N列：填充这一行的汉字词
+                        for col_idx, word in enumerate(line_words):
+                            cell = table.rows[current_row].cells[col_idx + 1]
+                            cell.text = word
+                            self._set_cell_properties(cell, chinese_size, is_content_cell=True, font_name=chinese_font)
                         
-                        # 设置单元格边距（上下为0）
-                        tcMar = OxmlElement('w:tcMar')
-                        for side in ['top', 'bottom']:
-                            margin = OxmlElement(f'w:{side}')
-                            margin.set(qn('w:w'), '0')
-                            margin.set(qn('w:type'), 'dxa')
-                            tcMar.append(margin)
-                        tcPr.append(tcMar)
-                        
-                        # 设置段落格式
-                        for paragraph in cell.paragraphs:
-                            paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                            paragraph.paragraph_format.space_before = Pt(0)
-                            paragraph.paragraph_format.space_after = Pt(0)
-                            paragraph.paragraph_format.line_spacing = 1.0
-                            for run in paragraph.runs:
-                                run.font.size = Pt(font_size)
+                        current_row += 1
                     
-                    # 填充第三行（翻译）- 第0列留空，第1到max_len列合并
-                    # 第0列：留空（与编号列对齐）
-                    empty_cell = table.rows[2].cells[0]
-                    empty_cell.text = ''
-                    # 设置空单元格的边距
-                    tc = empty_cell._tc
-                    tcPr = tc.get_or_add_tcPr()
-                    tcMar = OxmlElement('w:tcMar')
-                    for side in ['top', 'bottom']:
-                        margin = OxmlElement(f'w:{side}')
-                        margin.set(qn('w:w'), '0')
-                        margin.set(qn('w:type'), 'dxa')
-                        tcMar.append(margin)
-                    tcPr.append(tcMar)
+                    # 填充gloss（多行，自动换行）
+                    for line_idx, line_words in enumerate(gloss_lines_list):
+                        # 第0列：留空
+                        cell = table.rows[current_row].cells[0]
+                        cell.text = ''
+                        self._set_cell_properties(cell, gloss_size, is_content_cell=False)
+                        
+                        # 第1到N列：填充这一行的gloss词
+                        for col_idx, word in enumerate(line_words):
+                            cell = table.rows[current_row].cells[col_idx + 1]
+                            cell.text = word
+                            self._set_cell_properties(cell, gloss_size, is_content_cell=True, font_name=gloss_font)
+                        
+                        current_row += 1
+                    
+                    # 填充词汇分解(汉字)（多行，自动换行，每个词一个单元格）
+                    for line_idx, line_words in enumerate(gloss_cn_lines_list):
+                        # 第0列：留空
+                        cell = table.rows[current_row].cells[0]
+                        cell.text = ''
+                        self._set_cell_properties(cell, chinese_size, is_content_cell=False)
+                        
+                        # 第1到N列：填充这一行的汉字词
+                        for col_idx, word in enumerate(line_words):
+                            cell = table.rows[current_row].cells[col_idx + 1]
+                            cell.text = word
+                            self._set_cell_properties(cell, chinese_size, is_content_cell=True, font_name=chinese_font)
+                        
+                        current_row += 1
+                    
+                    # 填充翻译行（合并所有列）
+                    # 第0列：留空
+                    cell = table.rows[current_row].cells[0]
+                    cell.text = ''
+                    self._set_cell_properties(cell, translation_size, is_content_cell=False)
                     
                     if translation:
-                        # 合并第1到max_len列放翻译（与原文词列对齐）
-                        merged_cell = table.rows[2].cells[1]
-                        for col_idx in range(2, max_len + 1):
-                            merged_cell.merge(table.rows[2].cells[col_idx])
-                        
+                        # 合并第1列到最后一列
+                        merged_cell = table.rows[current_row].cells[1]
+                        for col_idx in range(2, table_cols):
+                            merged_cell.merge(table.rows[current_row].cells[col_idx])
                         merged_cell.text = f"'{translation}'"
-                        # 设置单元格属性
-                        tc = merged_cell._tc
-                        tcPr = tc.get_or_add_tcPr()
-                        
-                        # 垂直对齐为顶部
-                        vAlign = OxmlElement('w:vAlign')
-                        vAlign.set(qn('w:val'), 'top')
-                        tcPr.append(vAlign)
-                        
-                        # 设置单元格边距（上下为0）
-                        tcMar = OxmlElement('w:tcMar')
-                        for side in ['top', 'bottom']:
-                            margin = OxmlElement(f'w:{side}')
-                            margin.set(qn('w:w'), '0')
-                            margin.set(qn('w:type'), 'dxa')
-                            tcMar.append(margin)
-                        tcPr.append(tcMar)
-                        
-                        # 设置段落格式
-                        for paragraph in merged_cell.paragraphs:
-                            paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                            paragraph.paragraph_format.space_before = Pt(0)
-                            paragraph.paragraph_format.space_after = Pt(0)
-                            paragraph.paragraph_format.line_spacing = 1.0
-                            for run in paragraph.runs:
-                                run.font.size = Pt(font_size)
+                        self._set_cell_properties(merged_cell, translation_size, is_content_cell=True, font_name=translation_font)
                     
-                    # 汉字字段（多词情况，表格之后紧跟）
-                    if source_text_cn:
-                        p_cn = self.doc.add_paragraph(f"    【原文(汉字)】{source_text_cn}")
-                        p_cn.runs[0].font.size = Pt(font_size - 1)
-                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
-                        p_cn.paragraph_format.space_before = Pt(0)
-                        p_cn.paragraph_format.line_spacing = 1.0
-                    if gloss_cn:
-                        p_cn = self.doc.add_paragraph(f"    【词汇分解(汉字)】{gloss_cn}")
-                        p_cn.runs[0].font.size = Pt(font_size - 1)
-                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
-                        p_cn.paragraph_format.space_before = Pt(0)
-                        p_cn.paragraph_format.line_spacing = 1.0
-                    if translation_cn:
-                        p_cn = self.doc.add_paragraph(f"    【翻译(汉字)】{translation_cn}")
-                        p_cn.runs[0].font.size = Pt(font_size - 1)
-                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
-                        p_cn.paragraph_format.space_before = Pt(0)
-                        p_cn.paragraph_format.line_spacing = 1.0
+                    current_row += 1
+                    
+                    # 填充翻译(汉字)行（如果有）
+                    if include_chinese and translation_cn:
+                        # 第0列：留空
+                        cell = table.rows[current_row].cells[0]
+                        cell.text = ''
+                        self._set_cell_properties(cell, chinese_size, is_content_cell=False)
+                        
+                        # 合并第1列到最后一列
+                        merged_cell = table.rows[current_row].cells[1]
+                        for col_idx in range(2, table_cols):
+                            merged_cell.merge(table.rows[current_row].cells[col_idx])
+                        merged_cell.text = f"'{translation_cn}'"
+                        self._set_cell_properties(merged_cell, chinese_size, is_content_cell=True, font_name=chinese_font)
+                    
+                    # 汉字字段已经集成到表格中
                     
                 else:
                     # 如果没有分词，使用段落格式（不用表格）
@@ -621,17 +663,17 @@ class WordExporter:
                     if numbering_text:
                         p1.add_run(numbering_text).font.size = Pt(font_size)
                     p1.add_run(source_text).font.size = Pt(font_size)
-                    p1.paragraph_format.space_after = Pt(0)  # 紧凑排列
                     p1.paragraph_format.space_before = Pt(0)
+                    p1.paragraph_format.space_after = Pt(0)
                     p1.paragraph_format.line_spacing = 1.0
                     
-                    # 原文(汉字) 紧跟原文
-                    if source_text_cn:
-                        p_cn = self.doc.add_paragraph(f"【原文(汉字)】{source_text_cn}")
+                    # 原文(汉字) 紧跟原文（只在include_chinese时显示）
+                    if include_chinese and source_text_cn:
+                        p_cn = self.doc.add_paragraph(source_text_cn)
                         p_cn.runs[0].font.size = Pt(font_size - 1)
                         p_cn.paragraph_format.left_indent = Cm(indent_cm)
-                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p_cn.paragraph_format.space_before = Pt(0)
+                        p_cn.paragraph_format.space_after = Pt(0)
                         p_cn.paragraph_format.line_spacing = 1.0
                     
                     # 第二行：gloss（左缩进与原文对齐）
@@ -639,17 +681,17 @@ class WordExporter:
                         p2 = self.doc.add_paragraph(gloss)
                         p2.runs[0].font.size = Pt(font_size)
                         p2.paragraph_format.left_indent = Cm(indent_cm)
-                        p2.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p2.paragraph_format.space_before = Pt(0)
+                        p2.paragraph_format.space_after = Pt(0)
                         p2.paragraph_format.line_spacing = 1.0
                     
-                    # 词汇分解(汉字) 紧跟词汇分解
-                    if gloss_cn:
-                        p_cn = self.doc.add_paragraph(f"【词汇分解(汉字)】{gloss_cn}")
+                    # 词汇分解(汉字) 紧跟词汇分解（只在include_chinese时显示）
+                    if include_chinese and gloss_cn:
+                        p_cn = self.doc.add_paragraph(gloss_cn)
                         p_cn.runs[0].font.size = Pt(font_size - 1)
                         p_cn.paragraph_format.left_indent = Cm(indent_cm)
-                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p_cn.paragraph_format.space_before = Pt(0)
+                        p_cn.paragraph_format.space_after = Pt(0)
                         p_cn.paragraph_format.line_spacing = 1.0
                     
                     # 第三行：翻译（左缩进与原文对齐）
@@ -657,17 +699,17 @@ class WordExporter:
                         p3 = self.doc.add_paragraph(f"'{translation}'")
                         p3.runs[0].font.size = Pt(font_size)
                         p3.paragraph_format.left_indent = Cm(indent_cm)
-                        p3.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p3.paragraph_format.space_before = Pt(0)
+                        p3.paragraph_format.space_after = Pt(0)
                         p3.paragraph_format.line_spacing = 1.0
                     
-                    # 翻译(汉字) 紧跟翻译
-                    if translation_cn:
-                        p_cn = self.doc.add_paragraph(f"【翻译(汉字)】{translation_cn}")
+                    # 翻译(汉字) 紧跟翻译（只在include_chinese时显示）
+                    if include_chinese and translation_cn:
+                        p_cn = self.doc.add_paragraph(f"'{translation_cn}'")
                         p_cn.runs[0].font.size = Pt(font_size - 1)
                         p_cn.paragraph_format.left_indent = Cm(indent_cm)
-                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p_cn.paragraph_format.space_before = Pt(0)
+                        p_cn.paragraph_format.space_after = Pt(0)
                         p_cn.paragraph_format.line_spacing = 1.0
                 
                 # 添加备注（在表格外，与原文第一个词对齐）
@@ -675,8 +717,8 @@ class WordExporter:
                     note_p = self.doc.add_paragraph(f"    ({notes})")
                     note_p.runs[0].font.size = Pt(font_size - 1)
                     note_p.runs[0].italic = True
-                    note_p.paragraph_format.space_after = Pt(0)  # 紧凑排列
                     note_p.paragraph_format.space_before = Pt(0)
+                    note_p.paragraph_format.space_after = Pt(0)
                     note_p.paragraph_format.line_spacing = 1.0
                 
                 # 添加段落间距

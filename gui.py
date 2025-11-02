@@ -1266,7 +1266,8 @@ class MainWindow(QMainWindow):
             group_text = TextFormatter.format_entries(
                 group['entries'], 
                 show_numbering, 
-                include_chinese=include_chinese
+                include_chinese=include_chinese,
+                font_config=self.font_config
             )
             lines.append(group_text)
             lines.append("")
@@ -1280,7 +1281,8 @@ class MainWindow(QMainWindow):
             ungrouped_text = TextFormatter.format_entries(
                 ungrouped, 
                 show_numbering, 
-                include_chinese=include_chinese
+                include_chinese=include_chinese,
+                font_config=self.font_config
             )
             lines.append(ungrouped_text)
         
@@ -1341,7 +1343,8 @@ class MainWindow(QMainWindow):
                 line_spacing=1.15,
                 show_numbering=show_numbering,
                 entries_per_page=10,
-                include_chinese=include_chinese
+                include_chinese=include_chinese,
+                font_config=self.font_config
             )
             
             if success:
@@ -1466,7 +1469,8 @@ class MainWindow(QMainWindow):
                 line_spacing=1.15,
                 show_numbering=show_numbering,
                 entries_per_page=10,
-                include_chinese=include_chinese
+                include_chinese=include_chinese,
+                font_config=self.font_config
             )
             
             if success:
@@ -1576,7 +1580,8 @@ class MainWindow(QMainWindow):
                 line_spacing=1.15,
                 show_numbering=show_numbering,
                 entries_per_page=10,
-                include_chinese=include_chinese
+                include_chinese=include_chinese,
+                font_config=self.font_config
             )
             
             if success:
