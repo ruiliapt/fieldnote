@@ -398,14 +398,21 @@ class WordExporter:
                     tblCellSpacing.set(qn('w:type'), 'dxa')
                     tblPr.append(tblCellSpacing)
                     
-                    # 设置单元格边距为自动（让Word根据字体和内容自适应）
+                    # 设置单元格边距
                     tblCellMar = OxmlElement('w:tblCellMar')
                     
-                    # 所有边距使用auto类型，让Word自动计算
-                    for side in ['left', 'right', 'top', 'bottom']:
+                    # 左右边距自动调整（根据字体）
+                    for side in ['left', 'right']:
                         margin = OxmlElement(f'w:{side}')
                         margin.set(qn('w:w'), '0')
-                        margin.set(qn('w:type'), 'auto')  # 自动调整
+                        margin.set(qn('w:type'), 'auto')
+                        tblCellMar.append(margin)
+                    
+                    # 上下边距设为0（紧凑排列）
+                    for side in ['top', 'bottom']:
+                        margin = OxmlElement(f'w:{side}')
+                        margin.set(qn('w:w'), '0')
+                        margin.set(qn('w:type'), 'dxa')  # dxa表示固定值
                         tblCellMar.append(margin)
                     
                     tblPr.append(tblCellMar)
@@ -437,6 +444,10 @@ class WordExporter:
                         # 设置单元格格式
                         for paragraph in cell.paragraphs:
                             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                            # 设置段落间距为0（紧凑排列）
+                            paragraph.paragraph_format.space_before = Pt(0)
+                            paragraph.paragraph_format.space_after = Pt(0)
+                            paragraph.paragraph_format.line_spacing = 1.0  # 单倍行距
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
@@ -453,6 +464,10 @@ class WordExporter:
                         # 设置单元格格式
                         for paragraph in cell.paragraphs:
                             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                            # 设置段落间距为0（紧凑排列）
+                            paragraph.paragraph_format.space_before = Pt(0)
+                            paragraph.paragraph_format.space_after = Pt(0)
+                            paragraph.paragraph_format.line_spacing = 1.0  # 单倍行距
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
@@ -473,6 +488,10 @@ class WordExporter:
                         # 设置单元格格式
                         for paragraph in cell.paragraphs:
                             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                            # 设置段落间距为0（紧凑排列）
+                            paragraph.paragraph_format.space_before = Pt(0)
+                            paragraph.paragraph_format.space_after = Pt(0)
+                            paragraph.paragraph_format.line_spacing = 1.0  # 单倍行距
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
@@ -495,6 +514,10 @@ class WordExporter:
                         tcPr.append(vAlign)
                         for paragraph in merged_cell.paragraphs:
                             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                            # 设置段落间距为0（紧凑排列）
+                            paragraph.paragraph_format.space_before = Pt(0)
+                            paragraph.paragraph_format.space_after = Pt(0)
+                            paragraph.paragraph_format.line_spacing = 1.0  # 单倍行距
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
