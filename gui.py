@@ -479,6 +479,14 @@ class MainWindow(QMainWindow):
         search_layout = QHBoxLayout()
         search_group.setLayout(search_layout)
         
+        # 类型筛选
+        search_layout.addWidget(QLabel("数据类型:"))
+        self.search_type_combo = QComboBox()
+        self.search_type_combo.addItems(
+            ["全部类型", "单词", "单句", "语篇", "对话"]
+        )
+        search_layout.addWidget(self.search_type_combo)
+        
         search_layout.addWidget(QLabel("搜索字段:"))
         self.search_field_combo = QComboBox()
         self.search_field_combo.addItems(
@@ -533,6 +541,22 @@ class MainWindow(QMainWindow):
         
         self.export_selected_radio = QCheckBox("仅导出搜索结果")
         export_layout.addWidget(self.export_selected_radio)
+        
+        # 类型选择
+        type_select_layout = QHBoxLayout()
+        type_select_layout.addWidget(QLabel("数据类型:"))
+        self.export_type_combo = QComboBox()
+        self.export_type_combo.addItems(
+            ["全部类型", "单词", "单句", "语篇", "对话"]
+        )
+        type_select_layout.addWidget(self.export_type_combo)
+        export_layout.addLayout(type_select_layout)
+        
+        # 分组选项
+        self.export_group_by_checkbox = QCheckBox("按语篇/对话分组导出")
+        self.export_group_by_checkbox.setChecked(False)
+        self.export_group_by_checkbox.setToolTip("语篇和对话数据将按照其分组进行归类导出")
+        export_layout.addWidget(self.export_group_by_checkbox)
         
         layout.addWidget(export_group)
         
@@ -1076,8 +1100,17 @@ class MainWindow(QMainWindow):
             "备注": "notes"
         }
         
+        type_map = {
+            "全部类型": None,
+            "单词": "word",
+            "单句": "sentence",
+            "语篇": "discourse",
+            "对话": "dialogue"
+        }
+        
         field = field_map[self.search_field_combo.currentText()]
-        results = self.db.search_entries(field, keyword)
+        entry_type = type_map[self.search_type_combo.currentText()]
+        results = self.db.search_entries(field, keyword, entry_type=entry_type)
         
         self.search_table.setRowCount(len(results))
         
@@ -1099,6 +1132,8 @@ class MainWindow(QMainWindow):
     def reset_search(self):
         """重置搜索"""
         self.search_input.clear()
+        self.search_type_combo.setCurrentIndex(0)  # 重置为"全部类型"
+        self.search_field_combo.setCurrentIndex(0)  # 重置为"全部字段"
         self.search_table.setRowCount(0)
         self.search_stats_label.setText("搜索结果: 0 条")
     
@@ -1129,8 +1164,18 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "导入失败", f"错误: {str(e)}")
     
-    def generate_formatted_text(self):
-        """生成格式化文本"""
+    def _get_export_entries(self):
+        """获取要导出的数据（根据类型筛选）"""
+        type_map = {
+            "全部类型": None,
+            "单词": "word",
+            "单句": "sentence",
+            "语篇": "discourse",
+            "对话": "dialogue"
+        }
+        
+        selected_type = type_map[self.export_type_combo.currentText()]
+        
         # 确定导出数据
         if self.export_selected_radio.isChecked() and self.search_table.rowCount() > 0:
             # 导出搜索结果
@@ -1139,10 +1184,21 @@ class MainWindow(QMainWindow):
                 entry_id = int(self.search_table.item(row, 0).text())
                 entry = self.db.get_entry(entry_id)
                 if entry:
-                    entries.append(entry)
+                    # 如果选择了特定类型，进行筛选
+                    if selected_type is None or entry.get('entry_type') == selected_type:
+                        entries.append(entry)
         else:
-            # 导出所有语料
-            entries = self.db.get_all_entries()
+            # 导出所有语料（按类型筛选）
+            if selected_type is None:
+                entries = self.db.get_all_entries()
+            else:
+                entries = self.db.get_entries_by_type(selected_type)
+        
+        return entries
+    
+    def generate_formatted_text(self):
+        """生成格式化文本"""
+        entries = self._get_export_entries()
         
         if not entries:
             QMessageBox.warning(self, "提示", "没有可导出的语料！")
@@ -1151,10 +1207,16 @@ class MainWindow(QMainWindow):
         # 获取格式参数
         show_numbering = self.show_numbering_checkbox.isChecked()
         include_chinese = self.include_chinese_checkbox.isChecked()
+        group_by = self.export_group_by_checkbox.isChecked()
         
         # 生成格式化文本
-        formatted_text = TextFormatter.format_entries(entries, show_numbering, 
-                                                     include_chinese=include_chinese)
+        if group_by:
+            # 按分组导出
+            formatted_text = self._format_entries_by_group(entries, show_numbering, include_chinese)
+        else:
+            # 普通导出
+            formatted_text = TextFormatter.format_entries(entries, show_numbering, 
+                                                         include_chinese=include_chinese)
         
         # 显示在文本框中
         self.formatted_text_display.setPlainText(formatted_text)
@@ -1166,6 +1228,63 @@ class MainWindow(QMainWindow):
             "文本已按词对齐，可以直接复制到Word或其他文档。\n"
             "建议在Word中使用等宽字体（如Courier New）以保持对齐。"
         )
+    
+    def _format_entries_by_group(self, entries, show_numbering=True, include_chinese=False):
+        """按分组格式化输出"""
+        # 按group_id分组
+        groups = {}
+        ungrouped = []
+        
+        for entry in entries:
+            group_id = entry.get('group_id', '')
+            if group_id:
+                if group_id not in groups:
+                    groups[group_id] = {
+                        'name': entry.get('group_name', group_id),
+                        'type': entry.get('entry_type', 'sentence'),
+                        'entries': []
+                    }
+                groups[group_id]['entries'].append(entry)
+            else:
+                ungrouped.append(entry)
+        
+        # 生成格式化文本
+        lines = []
+        
+        # 先输出分组数据
+        for group_id in sorted(groups.keys()):
+            group = groups[group_id]
+            type_label = {"discourse": "语篇", "dialogue": "对话"}.get(group['type'], "分组")
+            
+            lines.append("=" * 60)
+            lines.append(f"{type_label}: {group['name']} ({group_id})")
+            lines.append(f"共 {len(group['entries'])} 句")
+            lines.append("=" * 60)
+            lines.append("")
+            
+            # 格式化该分组的所有条目
+            group_text = TextFormatter.format_entries(
+                group['entries'], 
+                show_numbering, 
+                include_chinese=include_chinese
+            )
+            lines.append(group_text)
+            lines.append("")
+        
+        # 再输出未分组数据
+        if ungrouped:
+            lines.append("=" * 60)
+            lines.append(f"未分组数据 (共 {len(ungrouped)} 条)")
+            lines.append("=" * 60)
+            lines.append("")
+            ungrouped_text = TextFormatter.format_entries(
+                ungrouped, 
+                show_numbering, 
+                include_chinese=include_chinese
+            )
+            lines.append(ungrouped_text)
+        
+        return "\n".join(lines)
     
     def copy_formatted_text(self):
         """复制格式化文本到剪贴板"""
@@ -1189,18 +1308,8 @@ class MainWindow(QMainWindow):
         if not file_path:
             return
         
-        # 确定导出数据
-        if self.export_selected_radio.isChecked() and self.search_table.rowCount() > 0:
-            # 导出搜索结果
-            entries = []
-            for row in range(self.search_table.rowCount()):
-                entry_id = int(self.search_table.item(row, 0).text())
-                entry = self.db.get_entry(entry_id)
-                if entry:
-                    entries.append(entry)
-        else:
-            # 导出所有语料
-            entries = self.db.get_all_entries()
+        # 获取要导出的数据
+        entries = self._get_export_entries()
         
         if not entries:
             QMessageBox.warning(self, "提示", "没有可导出的语料！")
@@ -1209,6 +1318,19 @@ class MainWindow(QMainWindow):
         # 获取导出参数
         show_numbering = self.show_numbering_checkbox.isChecked()
         include_chinese = self.include_chinese_checkbox.isChecked()
+        group_by = self.export_group_by_checkbox.isChecked()
+        
+        # 如果按分组导出，提示用户
+        if group_by:
+            reply = QMessageBox.question(
+                self, "分组导出",
+                "Word导出暂不支持分组显示，将按普通方式导出所有数据。\n\n"
+                "建议使用'生成对齐文本'功能以查看分组效果。\n\n"
+                "是否继续导出到Word？",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+            if reply != QMessageBox.StandardButton.Yes:
+                return
         
         # 执行导出
         try:

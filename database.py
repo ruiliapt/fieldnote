@@ -224,7 +224,7 @@ class CorpusDatabase:
         return [dict(row) for row in rows]
     
     def search_entries(self, field: str, keyword: str, 
-                       use_regex: bool = False) -> List[Dict]:
+                       use_regex: bool = False, entry_type: str = None) -> List[Dict]:
         """
         搜索语料记录
         
@@ -232,6 +232,7 @@ class CorpusDatabase:
             field: 搜索字段 (example_id, source_text, gloss, translation, notes)
             keyword: 搜索关键词
             use_regex: 是否使用正则表达式（暂不支持SQLite原生正则）
+            entry_type: 数据类型筛选 (word, sentence, discourse, dialogue)，None表示全部类型
             
         Returns:
             符合条件的语料记录列表
@@ -239,22 +240,37 @@ class CorpusDatabase:
         # SQLite的LIKE进行模糊搜索
         if field == "all":
             # 搜索所有字段
-            query = """
-                SELECT * FROM corpus 
-                WHERE example_id LIKE ? OR source_text LIKE ? 
-                   OR gloss LIKE ? OR translation LIKE ? OR notes LIKE ?
-                ORDER BY id
-            """
-            pattern = f"%{keyword}%"
-            self.cursor.execute(query, (pattern, pattern, pattern, pattern, pattern))
+            if entry_type:
+                query = """
+                    SELECT * FROM corpus 
+                    WHERE (example_id LIKE ? OR source_text LIKE ? 
+                       OR gloss LIKE ? OR translation LIKE ? OR notes LIKE ?)
+                       AND entry_type = ?
+                    ORDER BY id
+                """
+                pattern = f"%{keyword}%"
+                self.cursor.execute(query, (pattern, pattern, pattern, pattern, pattern, entry_type))
+            else:
+                query = """
+                    SELECT * FROM corpus 
+                    WHERE example_id LIKE ? OR source_text LIKE ? 
+                       OR gloss LIKE ? OR translation LIKE ? OR notes LIKE ?
+                    ORDER BY id
+                """
+                pattern = f"%{keyword}%"
+                self.cursor.execute(query, (pattern, pattern, pattern, pattern, pattern))
         else:
             # 搜索特定字段
             allowed_fields = ["example_id", "source_text", "gloss", "translation", "notes"]
             if field not in allowed_fields:
                 return []
             
-            query = f"SELECT * FROM corpus WHERE {field} LIKE ? ORDER BY id"
-            self.cursor.execute(query, (f"%{keyword}%",))
+            if entry_type:
+                query = f"SELECT * FROM corpus WHERE {field} LIKE ? AND entry_type = ? ORDER BY id"
+                self.cursor.execute(query, (f"%{keyword}%", entry_type))
+            else:
+                query = f"SELECT * FROM corpus WHERE {field} LIKE ? ORDER BY id"
+                self.cursor.execute(query, (f"%{keyword}%",))
         
         rows = self.cursor.fetchall()
         return [dict(row) for row in rows]
