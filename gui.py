@@ -118,10 +118,10 @@ class MainWindow(QMainWindow):
         input_layout = QFormLayout()
         input_group.setLayout(input_layout)
         
-        # 例句编号
-        self.example_id_input = QLineEdit()
-        self.example_id_input.setPlaceholderText("例：CJ001")
-        input_layout.addRow("例句编号:", self.example_id_input)
+        # 例句编号（为每个Tab创建独立的输入框）
+        example_id_input = QLineEdit()
+        example_id_input.setPlaceholderText("例：CJ001")
+        input_layout.addRow("例句编号:", example_id_input)
         
         # 对于语篇和对话，添加分组选择
         if entry_type in ["discourse", "dialogue"]:
@@ -165,53 +165,53 @@ class MainWindow(QMainWindow):
                 self.refresh_group_list("dialogue")
         
         # 原文
-        self.source_text_input = QTextEdit()
-        self.source_text_input.setMaximumHeight(60)
-        self.source_text_input.setPlaceholderText("输入原文（支持IPA和Unicode字符）")
-        self.setup_text_edit_context_menu(self.source_text_input)
-        input_layout.addRow("原文:", self.source_text_input)
+        source_text_input = QTextEdit()
+        source_text_input.setMaximumHeight(60)
+        source_text_input.setPlaceholderText("输入原文（支持IPA和Unicode字符）")
+        self.setup_text_edit_context_menu(source_text_input)
+        input_layout.addRow("原文:", source_text_input)
         
         # 原文(汉字) - 紧跟原文
-        self.source_text_cn_input = QTextEdit()
-        self.source_text_cn_input.setMaximumHeight(60)
-        self.source_text_cn_input.setPlaceholderText("输入原文的汉字注释（可选）")
-        self.setup_text_edit_context_menu(self.source_text_cn_input)
-        input_layout.addRow("原文(汉字):", self.source_text_cn_input)
+        source_text_cn_input = QTextEdit()
+        source_text_cn_input.setMaximumHeight(60)
+        source_text_cn_input.setPlaceholderText("输入原文的汉字注释（可选）")
+        self.setup_text_edit_context_menu(source_text_cn_input)
+        input_layout.addRow("原文(汉字):", source_text_cn_input)
         
         # 词汇分解
-        self.gloss_input = QTextEdit()
-        self.gloss_input.setMaximumHeight(60)
-        self.gloss_input.setPlaceholderText("输入词汇分解/注释")
-        self.setup_text_edit_context_menu(self.gloss_input)
-        input_layout.addRow("词汇分解:", self.gloss_input)
+        gloss_input = QTextEdit()
+        gloss_input.setMaximumHeight(60)
+        gloss_input.setPlaceholderText("输入词汇分解/注释")
+        self.setup_text_edit_context_menu(gloss_input)
+        input_layout.addRow("词汇分解:", gloss_input)
         
         # 词汇分解(汉字) - 紧跟词汇分解
-        self.gloss_cn_input = QTextEdit()
-        self.gloss_cn_input.setMaximumHeight(60)
-        self.gloss_cn_input.setPlaceholderText("输入词汇分解的汉字注释（可选）")
-        self.setup_text_edit_context_menu(self.gloss_cn_input)
-        input_layout.addRow("词汇分解(汉字):", self.gloss_cn_input)
+        gloss_cn_input = QTextEdit()
+        gloss_cn_input.setMaximumHeight(60)
+        gloss_cn_input.setPlaceholderText("输入词汇分解的汉字注释（可选）")
+        self.setup_text_edit_context_menu(gloss_cn_input)
+        input_layout.addRow("词汇分解(汉字):", gloss_cn_input)
         
         # 翻译
-        self.translation_input = QTextEdit()
-        self.translation_input.setMaximumHeight(60)
-        self.translation_input.setPlaceholderText("输入翻译")
-        self.setup_text_edit_context_menu(self.translation_input)
-        input_layout.addRow("翻译:", self.translation_input)
+        translation_input = QTextEdit()
+        translation_input.setMaximumHeight(60)
+        translation_input.setPlaceholderText("输入翻译")
+        self.setup_text_edit_context_menu(translation_input)
+        input_layout.addRow("翻译:", translation_input)
         
         # 翻译(汉字) - 紧跟翻译
-        self.translation_cn_input = QTextEdit()
-        self.translation_cn_input.setMaximumHeight(60)
-        self.translation_cn_input.setPlaceholderText("输入翻译的汉字版本（可选）")
-        self.setup_text_edit_context_menu(self.translation_cn_input)
-        input_layout.addRow("翻译(汉字):", self.translation_cn_input)
+        translation_cn_input = QTextEdit()
+        translation_cn_input.setMaximumHeight(60)
+        translation_cn_input.setPlaceholderText("输入翻译的汉字版本（可选）")
+        self.setup_text_edit_context_menu(translation_cn_input)
+        input_layout.addRow("翻译(汉字):", translation_cn_input)
         
         # 备注
-        self.notes_input = QTextEdit()
-        self.notes_input.setMaximumHeight(60)
-        self.notes_input.setPlaceholderText("输入备注（可选）")
-        self.setup_text_edit_context_menu(self.notes_input)
-        input_layout.addRow("备注:", self.notes_input)
+        notes_input = QTextEdit()
+        notes_input.setMaximumHeight(60)
+        notes_input.setPlaceholderText("输入备注（可选）")
+        self.setup_text_edit_context_menu(notes_input)
+        input_layout.addRow("备注:", notes_input)
         
         left_layout.addWidget(input_group)
         
@@ -319,9 +319,17 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(left_widget)
         main_layout.addWidget(right_widget)
         
-        # 存储当前Tab的类型信息
+        # 存储当前Tab的类型信息和输入框引用
         widget.setProperty("entry_type", entry_type)
         widget.setProperty("type_label", type_label)
+        widget.setProperty("example_id_input", example_id_input)
+        widget.setProperty("source_text_input", source_text_input)
+        widget.setProperty("source_text_cn_input", source_text_cn_input)
+        widget.setProperty("gloss_input", gloss_input)
+        widget.setProperty("gloss_cn_input", gloss_cn_input)
+        widget.setProperty("translation_input", translation_input)
+        widget.setProperty("translation_cn_input", translation_cn_input)
+        widget.setProperty("notes_input", notes_input)
         
         return widget
     
@@ -587,14 +595,33 @@ class MainWindow(QMainWindow):
     
     def add_entry(self):
         """添加语料"""
-        example_id = self.example_id_input.text().strip()
-        source_text = self.source_text_input.toPlainText().strip()
-        gloss = self.gloss_input.toPlainText().strip()
-        translation = self.translation_input.toPlainText().strip()
-        notes = self.notes_input.toPlainText().strip()
-        source_text_cn = self.source_text_cn_input.toPlainText().strip()
-        gloss_cn = self.gloss_cn_input.toPlainText().strip()
-        translation_cn = self.translation_cn_input.toPlainText().strip()
+        # 从当前Tab获取输入框
+        current_widget = self.data_sub_tabs.currentWidget()
+        if not current_widget:
+            QMessageBox.warning(self, "错误", "无法获取当前Tab！")
+            return
+        
+        example_id_input = current_widget.property("example_id_input")
+        source_text_input = current_widget.property("source_text_input")
+        source_text_cn_input = current_widget.property("source_text_cn_input")
+        gloss_input = current_widget.property("gloss_input")
+        gloss_cn_input = current_widget.property("gloss_cn_input")
+        translation_input = current_widget.property("translation_input")
+        translation_cn_input = current_widget.property("translation_cn_input")
+        notes_input = current_widget.property("notes_input")
+        
+        if not example_id_input or not source_text_input:
+            QMessageBox.warning(self, "错误", "无法获取输入框！")
+            return
+        
+        example_id = example_id_input.text().strip()
+        source_text = source_text_input.toPlainText().strip()
+        gloss = gloss_input.toPlainText().strip()
+        translation = translation_input.toPlainText().strip()
+        notes = notes_input.toPlainText().strip()
+        source_text_cn = source_text_cn_input.toPlainText().strip()
+        gloss_cn = gloss_cn_input.toPlainText().strip()
+        translation_cn = translation_cn_input.toPlainText().strip()
         
         if not source_text or not translation:
             QMessageBox.warning(self, "输入错误", "原文和翻译不能为空！")
@@ -640,14 +667,33 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "提示", "请先从表格中选择要更新的语料！")
             return
         
-        example_id = self.example_id_input.text().strip()
-        source_text = self.source_text_input.toPlainText().strip()
-        gloss = self.gloss_input.toPlainText().strip()
-        translation = self.translation_input.toPlainText().strip()
-        notes = self.notes_input.toPlainText().strip()
-        source_text_cn = self.source_text_cn_input.toPlainText().strip()
-        gloss_cn = self.gloss_cn_input.toPlainText().strip()
-        translation_cn = self.translation_cn_input.toPlainText().strip()
+        # 从当前Tab获取输入框
+        current_widget = self.data_sub_tabs.currentWidget()
+        if not current_widget:
+            QMessageBox.warning(self, "错误", "无法获取当前Tab！")
+            return
+        
+        example_id_input = current_widget.property("example_id_input")
+        source_text_input = current_widget.property("source_text_input")
+        source_text_cn_input = current_widget.property("source_text_cn_input")
+        gloss_input = current_widget.property("gloss_input")
+        gloss_cn_input = current_widget.property("gloss_cn_input")
+        translation_input = current_widget.property("translation_input")
+        translation_cn_input = current_widget.property("translation_cn_input")
+        notes_input = current_widget.property("notes_input")
+        
+        if not example_id_input or not source_text_input:
+            QMessageBox.warning(self, "错误", "无法获取输入框！")
+            return
+        
+        example_id = example_id_input.text().strip()
+        source_text = source_text_input.toPlainText().strip()
+        gloss = gloss_input.toPlainText().strip()
+        translation = translation_input.toPlainText().strip()
+        notes = notes_input.toPlainText().strip()
+        source_text_cn = source_text_cn_input.toPlainText().strip()
+        gloss_cn = gloss_cn_input.toPlainText().strip()
+        translation_cn = translation_cn_input.toPlainText().strip()
         
         if not source_text or not translation:
             QMessageBox.warning(self, "输入错误", "原文和翻译不能为空！")
@@ -710,14 +756,37 @@ class MainWindow(QMainWindow):
     
     def clear_inputs(self):
         """清空输入框"""
-        self.example_id_input.clear()
-        self.source_text_input.clear()
-        self.gloss_input.clear()
-        self.translation_input.clear()
-        self.notes_input.clear()
-        self.source_text_cn_input.clear()
-        self.gloss_cn_input.clear()
-        self.translation_cn_input.clear()
+        # 从当前Tab获取输入框
+        current_widget = self.data_sub_tabs.currentWidget()
+        if not current_widget:
+            return
+        
+        example_id_input = current_widget.property("example_id_input")
+        source_text_input = current_widget.property("source_text_input")
+        source_text_cn_input = current_widget.property("source_text_cn_input")
+        gloss_input = current_widget.property("gloss_input")
+        gloss_cn_input = current_widget.property("gloss_cn_input")
+        translation_input = current_widget.property("translation_input")
+        translation_cn_input = current_widget.property("translation_cn_input")
+        notes_input = current_widget.property("notes_input")
+        
+        if example_id_input:
+            example_id_input.clear()
+        if source_text_input:
+            source_text_input.clear()
+        if gloss_input:
+            gloss_input.clear()
+        if translation_input:
+            translation_input.clear()
+        if notes_input:
+            notes_input.clear()
+        if source_text_cn_input:
+            source_text_cn_input.clear()
+        if gloss_cn_input:
+            gloss_cn_input.clear()
+        if translation_cn_input:
+            translation_cn_input.clear()
+        
         self.current_entry_id = None
     
     def load_entry_to_form(self, row, column):
@@ -726,15 +795,32 @@ class MainWindow(QMainWindow):
         entry = self.db.get_entry(entry_id)
         
         if entry:
+            # 从当前Tab获取输入框
+            current_widget = self.data_sub_tabs.currentWidget()
+            if not current_widget:
+                return
+            
+            example_id_input = current_widget.property("example_id_input")
+            source_text_input = current_widget.property("source_text_input")
+            source_text_cn_input = current_widget.property("source_text_cn_input")
+            gloss_input = current_widget.property("gloss_input")
+            gloss_cn_input = current_widget.property("gloss_cn_input")
+            translation_input = current_widget.property("translation_input")
+            translation_cn_input = current_widget.property("translation_cn_input")
+            notes_input = current_widget.property("notes_input")
+            
+            if not example_id_input or not source_text_input:
+                return
+            
             self.current_entry_id = entry_id
-            self.example_id_input.setText(entry['example_id'] or "")
-            self.source_text_input.setPlainText(entry['source_text'] or "")
-            self.gloss_input.setPlainText(entry['gloss'] or "")
-            self.translation_input.setPlainText(entry['translation'] or "")
-            self.notes_input.setPlainText(entry['notes'] or "")
-            self.source_text_cn_input.setPlainText(entry.get('source_text_cn', "") or "")
-            self.gloss_cn_input.setPlainText(entry.get('gloss_cn', "") or "")
-            self.translation_cn_input.setPlainText(entry.get('translation_cn', "") or "")
+            example_id_input.setText(entry['example_id'] or "")
+            source_text_input.setPlainText(entry['source_text'] or "")
+            gloss_input.setPlainText(entry['gloss'] or "")
+            translation_input.setPlainText(entry['translation'] or "")
+            notes_input.setPlainText(entry['notes'] or "")
+            source_text_cn_input.setPlainText(entry.get('source_text_cn', "") or "")
+            gloss_cn_input.setPlainText(entry.get('gloss_cn', "") or "")
+            translation_cn_input.setPlainText(entry.get('translation_cn', "") or "")
     
     def create_menu_bar(self):
         """创建菜单栏"""
