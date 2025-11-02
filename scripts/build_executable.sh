@@ -25,37 +25,48 @@ poetry run pyinstaller \
     --noconfirm \
     Fieldnotes.spec
 
-echo ""
-echo "测试启动..."
-sleep 2
-# 在后台测试启动
-./dist/Fieldnotes.app/Contents/MacOS/Fieldnotes &
-TESTPID=$!
-sleep 3
-if ps -p $TESTPID > /dev/null 2>&1; then
-    echo "✅ 程序可以正常启动"
-    kill $TESTPID 2>/dev/null
+# 在本地环境测试启动，CI 环境跳过（无 GUI）
+if [ -z "$CI" ]; then
+    echo ""
+    echo "测试启动..."
+    sleep 2
+    # 在后台测试启动
+    ./dist/Fieldnotes.app/Contents/MacOS/Fieldnotes &
+    TESTPID=$!
+    sleep 3
+    if ps -p $TESTPID > /dev/null 2>&1; then
+        echo "✅ 程序可以正常启动"
+        kill $TESTPID 2>/dev/null
+    else
+        echo "⚠️  程序可能有启动问题，但已构建完成"
+    fi
 else
-    echo "⚠️  程序可能有启动问题，但已构建完成"
+    echo "⏭️  CI 环境检测到，跳过 GUI 启动测试"
 fi
 
 # 检查结果
-if [ -d "dist/Fieldnotes" ]; then
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    BUILD_PATH="dist/Fieldnotes.app"
+else
+    BUILD_PATH="dist/Fieldnotes"
+fi
+
+if [ -e "$BUILD_PATH" ]; then
     echo ""
     echo "=========================================="
     echo "  构建成功！"
     echo "=========================================="
     echo ""
-    echo "可执行文件位于: dist/Fieldnotes/"
+    echo "可执行文件位于: $BUILD_PATH"
     echo ""
     
     # 显示文件大小
-    du -sh dist/Fieldnotes/
+    du -sh "$BUILD_PATH"
     
     echo ""
     echo "运行程序："
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "  open dist/Fieldnotes/Fieldnotes.app"
+        echo "  open dist/Fieldnotes.app"
     else
         echo "  ./dist/Fieldnotes/Fieldnotes"
     fi
@@ -69,6 +80,7 @@ if [ -d "dist/Fieldnotes" ]; then
 else
     echo ""
     echo "构建失败！请检查错误信息。"
+    echo "期望的构建路径: $BUILD_PATH"
     exit 1
 fi
 

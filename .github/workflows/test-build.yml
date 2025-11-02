@@ -9,9 +9,11 @@ jobs:
   test-build:
     name: Test Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
         
     steps:
       - name: Checkout code
