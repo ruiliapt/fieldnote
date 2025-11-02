@@ -156,10 +156,7 @@ class TextFormatter:
         gloss_has_words = len(gloss.split()) > 1
         
         if source_has_words and gloss_has_words:
-            # 多词情况：编号单独一行，然后词对齐
-            if numbering_text:
-                lines.append(numbering_text.rstrip())
-            
+            # 多词情况：编号和原文在同一行
             source_words = source_text.split()
             gloss_words = gloss.split()
             
@@ -175,14 +172,24 @@ class TextFormatter:
             
             # 如果词数超过每行最大值，分行显示
             if len(source_words) > max_words_per_line:
+                # 计算缩进
+                if numbering_text:
+                    indent = ' ' * len(numbering_text)
+                else:
+                    indent = '    '
+                
                 # 分批处理
                 for i in range(0, len(source_words), max_words_per_line):
                     batch_source = source_words[i:i + max_words_per_line]
                     batch_gloss = gloss_words[i:i + max_words_per_line]
                     
                     aligned_source, aligned_gloss = TextFormatter.align_words(batch_source, batch_gloss)
-                    lines.append(f"    {aligned_source}")
-                    lines.append(f"    {aligned_gloss}")
+                    # 第一批添加编号
+                    if i == 0 and numbering_text:
+                        lines.append(f"{numbering_text}{aligned_source}")
+                    else:
+                        lines.append(f"{indent}{aligned_source}")
+                    lines.append(f"{indent}{aligned_gloss}")
                     
                     # 如果还有下一批，添加空行分隔
                     if i + max_words_per_line < len(source_words):
@@ -190,28 +197,41 @@ class TextFormatter:
             else:
                 # 一行能显示完
                 aligned_source, aligned_gloss = TextFormatter.align_words(source_words, gloss_words)
-                lines.append(f"    {aligned_source}")
+                # 编号和原文在同一行
+                if numbering_text:
+                    lines.append(f"{numbering_text}{aligned_source}")
+                    # 计算缩进（编号的长度）
+                    indent = ' ' * len(numbering_text)
+                else:
+                    lines.append(f"    {aligned_source}")
+                    indent = '    '
+                
                 # 原文(汉字) 紧跟原文
                 if source_text_cn:
-                    lines.append(f"    【原文(汉字)】{source_text_cn}")
+                    lines.append(f"{indent}【原文(汉字)】{source_text_cn}")
                 
-                lines.append(f"    {aligned_gloss}")
+                lines.append(f"{indent}{aligned_gloss}")
                 # 词汇分解(汉字) 紧跟词汇分解
                 if gloss_cn:
-                    lines.append(f"    【词汇分解(汉字)】{gloss_cn}")
+                    lines.append(f"{indent}【词汇分解(汉字)】{gloss_cn}")
             
-            # 翻译行
+            # 翻译行（使用编号的缩进）
+            if numbering_text:
+                indent = ' ' * len(numbering_text)
+            else:
+                indent = '    '
+            
             if translation:
                 if notes:
-                    lines.append(f"    '{translation}' ({notes})")
+                    lines.append(f"{indent}'{translation}' ({notes})")
                 else:
-                    lines.append(f"    '{translation}'")
+                    lines.append(f"{indent}'{translation}'")
             elif notes:
-                lines.append(f"    ({notes})")
+                lines.append(f"{indent}({notes})")
             
             # 翻译(汉字) 紧跟翻译
             if translation_cn:
-                lines.append(f"    【翻译(汉字)】{translation_cn}")
+                lines.append(f"{indent}【翻译(汉字)】{translation_cn}")
         else:
             # 单词情况：编号和原文在同一行
             lines.append(f"{numbering_text}{source_text}")
