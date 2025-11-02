@@ -570,18 +570,21 @@ class WordExporter:
                     if source_text_cn:
                         p_cn = self.doc.add_paragraph(f"    【原文(汉字)】{source_text_cn}")
                         p_cn.runs[0].font.size = Pt(font_size - 1)
-                        p_cn.paragraph_format.space_after = Pt(2)
+                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p_cn.paragraph_format.space_before = Pt(0)
+                        p_cn.paragraph_format.line_spacing = 1.0
                     if gloss_cn:
                         p_cn = self.doc.add_paragraph(f"    【词汇分解(汉字)】{gloss_cn}")
                         p_cn.runs[0].font.size = Pt(font_size - 1)
-                        p_cn.paragraph_format.space_after = Pt(2)
+                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p_cn.paragraph_format.space_before = Pt(0)
+                        p_cn.paragraph_format.line_spacing = 1.0
                     if translation_cn:
                         p_cn = self.doc.add_paragraph(f"    【翻译(汉字)】{translation_cn}")
                         p_cn.runs[0].font.size = Pt(font_size - 1)
-                        p_cn.paragraph_format.space_after = Pt(2)
+                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p_cn.paragraph_format.space_before = Pt(0)
+                        p_cn.paragraph_format.line_spacing = 1.0
                     
                 else:
                     # 如果没有分词，使用段落格式（不用表格）
@@ -596,54 +599,63 @@ class WordExporter:
                     if numbering_text:
                         p1.add_run(numbering_text).font.size = Pt(font_size)
                     p1.add_run(source_text).font.size = Pt(font_size)
-                    p1.paragraph_format.space_after = Pt(2)
+                    p1.paragraph_format.space_after = Pt(0)  # 紧凑排列
                     p1.paragraph_format.space_before = Pt(0)
+                    p1.paragraph_format.line_spacing = 1.0
                     
                     # 原文(汉字) 紧跟原文
                     if source_text_cn:
                         p_cn = self.doc.add_paragraph(f"【原文(汉字)】{source_text_cn}")
                         p_cn.runs[0].font.size = Pt(font_size - 1)
                         p_cn.paragraph_format.left_indent = Cm(indent_cm)
-                        p_cn.paragraph_format.space_after = Pt(2)
+                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p_cn.paragraph_format.space_before = Pt(0)
+                        p_cn.paragraph_format.line_spacing = 1.0
                     
                     # 第二行：gloss（左缩进与原文对齐）
                     if gloss:
                         p2 = self.doc.add_paragraph(gloss)
                         p2.runs[0].font.size = Pt(font_size)
                         p2.paragraph_format.left_indent = Cm(indent_cm)
-                        p2.paragraph_format.space_after = Pt(2)
+                        p2.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p2.paragraph_format.space_before = Pt(0)
+                        p2.paragraph_format.line_spacing = 1.0
                     
                     # 词汇分解(汉字) 紧跟词汇分解
                     if gloss_cn:
                         p_cn = self.doc.add_paragraph(f"【词汇分解(汉字)】{gloss_cn}")
                         p_cn.runs[0].font.size = Pt(font_size - 1)
                         p_cn.paragraph_format.left_indent = Cm(indent_cm)
-                        p_cn.paragraph_format.space_after = Pt(2)
+                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p_cn.paragraph_format.space_before = Pt(0)
+                        p_cn.paragraph_format.line_spacing = 1.0
                     
                     # 第三行：翻译（左缩进与原文对齐）
                     if translation:
                         p3 = self.doc.add_paragraph(f"'{translation}'")
                         p3.runs[0].font.size = Pt(font_size)
                         p3.paragraph_format.left_indent = Cm(indent_cm)
-                        p3.paragraph_format.space_after = Pt(2)
+                        p3.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p3.paragraph_format.space_before = Pt(0)
+                        p3.paragraph_format.line_spacing = 1.0
                     
                     # 翻译(汉字) 紧跟翻译
                     if translation_cn:
                         p_cn = self.doc.add_paragraph(f"【翻译(汉字)】{translation_cn}")
                         p_cn.runs[0].font.size = Pt(font_size - 1)
                         p_cn.paragraph_format.left_indent = Cm(indent_cm)
-                        p_cn.paragraph_format.space_after = Pt(2)
+                        p_cn.paragraph_format.space_after = Pt(0)  # 紧凑排列
                         p_cn.paragraph_format.space_before = Pt(0)
+                        p_cn.paragraph_format.line_spacing = 1.0
                 
                 # 添加备注（在表格外，与原文第一个词对齐）
                 if notes:
                     note_p = self.doc.add_paragraph(f"    ({notes})")
                     note_p.runs[0].font.size = Pt(font_size - 1)
                     note_p.runs[0].italic = True
+                    note_p.paragraph_format.space_after = Pt(0)  # 紧凑排列
+                    note_p.paragraph_format.space_before = Pt(0)
+                    note_p.paragraph_format.line_spacing = 1.0
                 
                 # 添加段落间距
                 self.doc.add_paragraph()
