@@ -130,6 +130,83 @@ jobs:
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
+      - name: Prepare Release Notes
+        id: release_notes
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          
+          # 创建 Release Notes
+          cat > release_notes.md << 'NOTES_EOF'
+          ## Fieldnotes Lite ${{ steps.get_version.outputs.VERSION }}
+          
+          田野笔记管理工具 - 专为语言学田野调查设计的语料管理与导出工具
+          
+          ### 📦 下载安装包
+          
+          | 平台 | 文件 | 说明 |
+          |------|------|------|
+          | 🪟 Windows | `Fieldnotes-Windows.zip` | 解压后运行 `Fieldnotes.exe` |
+          | 🍎 macOS | `Fieldnotes-macOS.tar.gz` | 解压后双击 `Fieldnotes.app` |
+          | 🐧 Linux | `Fieldnotes-Linux-x86_64.tar.gz` | 解压后运行 `./Fieldnotes` |
+          
+          ### 🔐 文件校验
+          
+          每个安装包都附带 `.sha256` 校验文件：
+          
+          ```bash
+          # macOS/Linux
+          shasum -a 256 -c Fieldnotes-*.sha256
+          
+          # Windows PowerShell
+          Get-FileHash Fieldnotes-Windows.zip -Algorithm SHA256
+          ```
+          
+          ### 🚀 快速开始
+          
+          **macOS 用户**：
+          1. 解压 `Fieldnotes-macOS.tar.gz`
+          2. 右键点击 `Fieldnotes.app` → 选择"打开"（首次运行）
+          3. 后续可直接双击启动
+          
+          **Windows 用户**：
+          1. 解压 `Fieldnotes-Windows.zip`
+          2. 双击 `Fieldnotes.exe`
+          3. 如提示安全警告，选择"更多信息" → "仍要运行"
+          
+          **Linux 用户**：
+          1. 解压 `Fieldnotes-Linux-x86_64.tar.gz`
+          2. 添加执行权限：`chmod +x Fieldnotes/Fieldnotes`
+          3. 运行：`./Fieldnotes/Fieldnotes`
+          
+          ---
+          
+          NOTES_EOF
+          
+          # 如果存在 CHANGELOG，追加到 Release Notes
+          if [ -f "CHANGELOG_${VERSION}.md" ]; then
+            echo "" >> release_notes.md
+            cat "CHANGELOG_${VERSION}.md" >> release_notes.md
+          else
+            echo "⚠️ 未找到 CHANGELOG_${VERSION}.md，使用默认发布说明"
+          fi
+          
+          # 添加文档链接
+          cat >> release_notes.md << 'FOOTER_EOF'
+          
+          ---
+          
+          ### 📖 文档与支持
+          
+          - **[README](https://github.com/ruiliapt/fieldnote/blob/main/README.md)** - 项目说明
+          - **[快速指南](https://github.com/ruiliapt/fieldnote/blob/main/docs/user/ONE_PAGE_GUIDE.md)** - 5分钟上手
+          - **[使用教程](https://github.com/ruiliapt/fieldnote/blob/main/docs/user/USER_GUIDE_NON_TECHNICAL.md)** - 详细图文
+          - **[故障排查](https://github.com/ruiliapt/fieldnote/blob/main/docs/TROUBLESHOOTING.md)** - 常见问题
+          
+          ### 🐛 问题反馈
+          
+          遇到问题？请访问 [Issues](https://github.com/ruiliapt/fieldnote/issues) 提交问题报告。
+          FOOTER_EOF
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -138,33 +215,7 @@ jobs:
           prerelease: false
           files: |
             artifacts/**/*
-          body: |
-            ## Fieldnotes Lite ${{ steps.get_version.outputs.VERSION }}
-            
-            ### 📦 下载
-            
-            - **Windows**: `Fieldnotes-Windows.zip`
-            - **macOS**: `Fieldnotes-macOS.tar.gz`
-            - **Linux**: `Fieldnotes-Linux-x86_64.tar.gz`
-            
-            ### 🔐 校验和
-            
-            每个下载包都附带 `.sha256` 文件，用于验证完整性。
-            
-            ### 📝 更新日志
-            
-            详见 [CHANGELOG_${{ steps.get_version.outputs.VERSION }}.md](./CHANGELOG_${{ steps.get_version.outputs.VERSION }}.md)
-            
-            ### 🚀 使用方法
-            
-            1. 下载对应平台的压缩包
-            2. 解压文件
-            3. 运行程序：
-               - **Windows**: 双击 `Fieldnotes.exe`
-               - **macOS**: 双击 `Fieldnotes.app`
-               - **Linux**: 运行 `./Fieldnotes`
-            
-            详细说明请查看 [README.md](./README.md)
+          body_path: release_notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
