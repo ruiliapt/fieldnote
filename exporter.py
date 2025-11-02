@@ -358,8 +358,9 @@ class WordExporter:
                     source_words = source_words + [''] * (max_len - len(source_words))
                     gloss_words = gloss_words + [''] * (max_len - len(gloss_words))
                     
-                    # 创建透明表格：3行 x N列（原文、注释、翻译）
-                    table = self.doc.add_table(rows=3, cols=max_len)
+                    # 创建透明表格：3行 x (N+1)列
+                    # 第0列用于编号，第1到N列用于词对齐
+                    table = self.doc.add_table(rows=3, cols=max_len + 1)
                     
                     # 移除所有边框（透明表格）
                     tbl = table._tbl
@@ -384,16 +385,21 @@ class WordExporter:
                     tblLayout.set(qn('w:type'), 'fixed')
                     tblPr.append(tblLayout)
                     
-                    # 计算每列的宽度（平均分配）
+                    # 计算每列的宽度
                     from docx.shared import Cm
-                    total_width = Cm(16)  # 总宽度16厘米
-                    col_width = total_width / max_len
+                    numbering_col_width = Cm(1.2)  # 编号列宽度1.2厘米
+                    total_word_width = Cm(14.8)  # 词列总宽度14.8厘米
+                    word_col_width = total_word_width / max_len  # 每个词列的宽度
                     
-                    # 设置每列的宽度
-                    for col_idx in range(max_len):
+                    # 设置第0列（编号列）的宽度
+                    for row in table.rows:
+                        row.cells[0].width = numbering_col_width
+                    
+                    # 设置第1到N列（词列）的宽度
+                    for col_idx in range(1, max_len + 1):
                         for row in table.rows:
                             cell = row.cells[col_idx]
-                            cell.width = col_width
+                            cell.width = word_col_width
                     
                     # 设置所有行为根据内容自动调整高度
                     for row in table.rows:
@@ -409,13 +415,10 @@ class WordExporter:
                         trPr.append(trHeight)
                     
                     # 填充第一行（原文）
-                    for col_idx, word in enumerate(source_words):
-                        cell = table.rows[0].cells[col_idx]
-                        # 第一个单元格加上编号
-                        if col_idx == 0 and numbering_text:
-                            cell.text = numbering_text + word
-                        else:
-                            cell.text = word
+                    # 第0列：编号
+                    if numbering_text:
+                        cell = table.rows[0].cells[0]
+                        cell.text = numbering_text
                         # 设置单元格垂直对齐为顶部
                         tc = cell._tc
                         tcPr = tc.get_or_add_tcPr()
@@ -428,9 +431,9 @@ class WordExporter:
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
-                    # 填充第二行（注释）
-                    for col_idx, word in enumerate(gloss_words):
-                        cell = table.rows[1].cells[col_idx]
+                    # 第1到N列：原文词
+                    for col_idx, word in enumerate(source_words):
+                        cell = table.rows[0].cells[col_idx + 1]
                         cell.text = word
                         # 设置单元格垂直对齐为顶部
                         tc = cell._tc
@@ -444,13 +447,35 @@ class WordExporter:
                             for run in paragraph.runs:
                                 run.font.size = Pt(font_size)
                     
-                    # 填充第三行（翻译）- 合并所有列
+                    # 填充第二行（注释）
+                    # 第0列：留空（与编号列对齐）
+                    table.rows[1].cells[0].text = ''
+                    
+                    # 第1到N列：gloss词（与原文词对齐）
+                    for col_idx, word in enumerate(gloss_words):
+                        cell = table.rows[1].cells[col_idx + 1]
+                        cell.text = word
+                        # 设置单元格垂直对齐为顶部
+                        tc = cell._tc
+                        tcPr = tc.get_or_add_tcPr()
+                        vAlign = OxmlElement('w:vAlign')
+                        vAlign.set(qn('w:val'), 'top')
+                        tcPr.append(vAlign)
+                        # 设置单元格格式
+                        for paragraph in cell.paragraphs:
+                            paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                            for run in paragraph.runs:
+                                run.font.size = Pt(font_size)
+                    
+                    # 填充第三行（翻译）- 第0列留空，第1到max_len列合并
+                    # 第0列：留空（与编号列对齐）
+                    table.rows[2].cells[0].text = ''
+                    
                     if translation:
-                        # 合并第三行的所有单元格
-                        merged_cell = table.rows[2].cells[0]
-                        if max_len > 1:
-                            for col_idx in range(1, max_len):
-                                merged_cell.merge(table.rows[2].cells[col_idx])
+                        # 合并第1到max_len列放翻译（与原文词列对齐）
+                        merged_cell = table.rows[2].cells[1]
+                        for col_idx in range(2, max_len + 1):
+                            merged_cell.merge(table.rows[2].cells[col_idx])
                         
                         merged_cell.text = f"'{translation}'"
                         # 设置单元格垂直对齐为顶部
