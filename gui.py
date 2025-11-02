@@ -248,24 +248,24 @@ class MainWindow(QMainWindow):
         right_layout = QVBoxLayout()
         right_widget.setLayout(right_layout)
         
-        # 数据表格
+        # 数据表格（每个Tab独立）
         list_group = QGroupBox("已录入语料")
         list_layout = QVBoxLayout()
         list_group.setLayout(list_layout)
         
-        self.data_table = QTableWidget()
-        self.data_table.setColumnCount(9)
-        self.data_table.setHorizontalHeaderLabels(
+        data_table = QTableWidget()
+        data_table.setColumnCount(9)
+        data_table.setHorizontalHeaderLabels(
             ["ID", "例句编号", "原文", "原文(汉字)", "词汇分解", "词汇分解(汉字)", "翻译", "翻译(汉字)", "备注"]
         )
-        self.data_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
-        self.data_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)  # 支持多选
-        self.data_table.cellClicked.connect(self.load_entry_to_form)
-        list_layout.addWidget(self.data_table)
+        data_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        data_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)  # 支持多选
+        data_table.cellClicked.connect(self.load_entry_to_form)
+        list_layout.addWidget(data_table)
         
         # 统计信息
-        self.stats_label = QLabel("总计: 0 条语料")
-        list_layout.addWidget(self.stats_label)
+        stats_label = QLabel("总计: 0 条语料")
+        list_layout.addWidget(stats_label)
         
         right_layout.addWidget(list_group)
         
@@ -274,16 +274,16 @@ class MainWindow(QMainWindow):
         export_layout = QVBoxLayout()
         export_group.setLayout(export_layout)
         
-        # 导出选项
+        # 导出选项（每个Tab独立）
         options_layout = QHBoxLayout()
         
-        self.data_show_numbering = QCheckBox("显示编号")
-        self.data_show_numbering.setChecked(True)
-        options_layout.addWidget(self.data_show_numbering)
+        data_show_numbering = QCheckBox("显示编号")
+        data_show_numbering.setChecked(True)
+        options_layout.addWidget(data_show_numbering)
         
-        self.data_include_chinese = QCheckBox("包含汉字")
-        self.data_include_chinese.setChecked(False)
-        options_layout.addWidget(self.data_include_chinese)
+        data_include_chinese = QCheckBox("包含汉字")
+        data_include_chinese.setChecked(False)
+        options_layout.addWidget(data_include_chinese)
         
         options_layout.addStretch()
         export_layout.addLayout(options_layout)
@@ -319,7 +319,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(left_widget)
         main_layout.addWidget(right_widget)
         
-        # 存储当前Tab的类型信息和输入框引用
+        # 存储当前Tab的类型信息和所有组件引用
         widget.setProperty("entry_type", entry_type)
         widget.setProperty("type_label", type_label)
         widget.setProperty("example_id_input", example_id_input)
@@ -330,6 +330,10 @@ class MainWindow(QMainWindow):
         widget.setProperty("translation_input", translation_input)
         widget.setProperty("translation_cn_input", translation_cn_input)
         widget.setProperty("notes_input", notes_input)
+        widget.setProperty("data_table", data_table)
+        widget.setProperty("stats_label", stats_label)
+        widget.setProperty("data_show_numbering", data_show_numbering)
+        widget.setProperty("data_include_chinese", data_include_chinese)
         
         return widget
     
@@ -1019,27 +1023,37 @@ class MainWindow(QMainWindow):
     
     def refresh_table(self):
         """刷新数据表格（根据当前Tab显示对应类型的数据）"""
+        # 获取当前Tab的表格和标签
+        current_widget = self.data_sub_tabs.currentWidget()
+        if not current_widget:
+            return
+        
+        data_table = current_widget.property("data_table")
+        stats_label = current_widget.property("stats_label")
+        
+        if not data_table or not stats_label:
+            return
+        
         entry_type = self.get_current_entry_type()
         entries = self.db.get_entries_by_type(entry_type)
-        self.data_table.setRowCount(len(entries))
+        data_table.setRowCount(len(entries))
         
         for row, entry in enumerate(entries):
-            self.data_table.setItem(row, 0, QTableWidgetItem(str(entry['id'])))
-            self.data_table.setItem(row, 1, QTableWidgetItem(entry['example_id'] or ""))
-            self.data_table.setItem(row, 2, QTableWidgetItem(entry['source_text'] or ""))
-            self.data_table.setItem(row, 3, QTableWidgetItem(entry.get('source_text_cn', "") or ""))
-            self.data_table.setItem(row, 4, QTableWidgetItem(entry['gloss'] or ""))
-            self.data_table.setItem(row, 5, QTableWidgetItem(entry.get('gloss_cn', "") or ""))
-            self.data_table.setItem(row, 6, QTableWidgetItem(entry['translation'] or ""))
-            self.data_table.setItem(row, 7, QTableWidgetItem(entry.get('translation_cn', "") or ""))
-            self.data_table.setItem(row, 8, QTableWidgetItem(entry['notes'] or ""))
+            data_table.setItem(row, 0, QTableWidgetItem(str(entry['id'])))
+            data_table.setItem(row, 1, QTableWidgetItem(entry['example_id'] or ""))
+            data_table.setItem(row, 2, QTableWidgetItem(entry['source_text'] or ""))
+            data_table.setItem(row, 3, QTableWidgetItem(entry.get('source_text_cn', "") or ""))
+            data_table.setItem(row, 4, QTableWidgetItem(entry['gloss'] or ""))
+            data_table.setItem(row, 5, QTableWidgetItem(entry.get('gloss_cn', "") or ""))
+            data_table.setItem(row, 6, QTableWidgetItem(entry['translation'] or ""))
+            data_table.setItem(row, 7, QTableWidgetItem(entry.get('translation_cn', "") or ""))
+            data_table.setItem(row, 8, QTableWidgetItem(entry['notes'] or ""))
         
-        self.data_table.resizeColumnsToContents()
+        data_table.resizeColumnsToContents()
         
         # 获取类型标签
-        current_widget = self.data_sub_tabs.currentWidget()
-        type_label = current_widget.property("type_label") if current_widget else "语料"
-        self.stats_label.setText(f"{type_label}总计: {len(entries)} 条")
+        type_label = current_widget.property("type_label") or "语料"
+        stats_label.setText(f"{type_label}总计: {len(entries)} 条")
     
     def search_entries(self):
         """搜索语料"""
@@ -1217,14 +1231,23 @@ class MainWindow(QMainWindow):
     
     def _get_selected_entries(self):
         """获取选中的语料"""
-        selected_rows = self.data_table.selectionModel().selectedRows()
+        # 从当前Tab获取表格
+        current_widget = self.data_sub_tabs.currentWidget()
+        if not current_widget:
+            return []
+        
+        data_table = current_widget.property("data_table")
+        if not data_table:
+            return []
+        
+        selected_rows = data_table.selectionModel().selectedRows()
         if not selected_rows:
             return []
         
         entries = []
         for index in selected_rows:
             row = index.row()
-            entry_id = int(self.data_table.item(row, 0).text())
+            entry_id = int(data_table.item(row, 0).text())
             entry = self.db.get_entry(entry_id)
             if entry:
                 entries.append(entry)
@@ -1237,8 +1260,16 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "提示", "请先选择要导出的语料！\n\n提示：按住Ctrl或Shift可多选")
             return
         
-        show_numbering = self.data_show_numbering.isChecked()
-        include_chinese = self.data_include_chinese.isChecked()
+        # 从当前Tab获取导出选项
+        current_widget = self.data_sub_tabs.currentWidget()
+        if not current_widget:
+            return
+        
+        data_show_numbering = current_widget.property("data_show_numbering")
+        data_include_chinese = current_widget.property("data_include_chinese")
+        
+        show_numbering = data_show_numbering.isChecked() if data_show_numbering else True
+        include_chinese = data_include_chinese.isChecked() if data_include_chinese else False
         
         formatted_text = TextFormatter.format_entries(entries, show_numbering, 
                                                      include_chinese=include_chinese)
@@ -1289,8 +1320,16 @@ class MainWindow(QMainWindow):
         if not file_path:
             return
         
-        show_numbering = self.data_show_numbering.isChecked()
-        include_chinese = self.data_include_chinese.isChecked()
+        # 从当前Tab获取导出选项
+        current_widget = self.data_sub_tabs.currentWidget()
+        if not current_widget:
+            return
+        
+        data_show_numbering = current_widget.property("data_show_numbering")
+        data_include_chinese = current_widget.property("data_include_chinese")
+        
+        show_numbering = data_show_numbering.isChecked() if data_show_numbering else True
+        include_chinese = data_include_chinese.isChecked() if data_include_chinese else False
         
         try:
             success = self.exporter.export(
@@ -1315,14 +1354,27 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "导出失败", f"错误: {str(e)}")
     
     def quick_export_all_text(self):
-        """快速导出所有语料为文本"""
-        entries = self.db.get_all_entries()
+        """快速导出当前Tab的所有语料为文本"""
+        # 获取当前Tab类型的所有语料
+        entry_type = self.get_current_entry_type()
+        entries = self.db.get_entries_by_type(entry_type)
+        
         if not entries:
-            QMessageBox.warning(self, "提示", "没有可导出的语料！")
+            current_widget = self.data_sub_tabs.currentWidget()
+            type_label = current_widget.property("type_label") if current_widget else "语料"
+            QMessageBox.warning(self, "提示", f"当前{type_label}Tab没有可导出的语料！")
             return
         
-        show_numbering = self.data_show_numbering.isChecked()
-        include_chinese = self.data_include_chinese.isChecked()
+        # 从当前Tab获取导出选项
+        current_widget = self.data_sub_tabs.currentWidget()
+        if not current_widget:
+            return
+        
+        data_show_numbering = current_widget.property("data_show_numbering")
+        data_include_chinese = current_widget.property("data_include_chinese")
+        
+        show_numbering = data_show_numbering.isChecked() if data_show_numbering else True
+        include_chinese = data_include_chinese.isChecked() if data_include_chinese else False
         
         formatted_text = TextFormatter.format_entries(entries, show_numbering, 
                                                      include_chinese=include_chinese)
@@ -1360,10 +1412,15 @@ class MainWindow(QMainWindow):
         dialog.exec()
     
     def quick_export_all_word(self):
-        """快速导出所有语料到Word"""
-        entries = self.db.get_all_entries()
+        """快速导出当前Tab的所有语料到Word"""
+        # 获取当前Tab类型的所有语料
+        entry_type = self.get_current_entry_type()
+        entries = self.db.get_entries_by_type(entry_type)
+        
         if not entries:
-            QMessageBox.warning(self, "提示", "没有可导出的语料！")
+            current_widget = self.data_sub_tabs.currentWidget()
+            type_label = current_widget.property("type_label") if current_widget else "语料"
+            QMessageBox.warning(self, "提示", f"当前{type_label}Tab没有可导出的语料！")
             return
         
         file_path, _ = QFileDialog.getSaveFileName(
@@ -1373,8 +1430,16 @@ class MainWindow(QMainWindow):
         if not file_path:
             return
         
-        show_numbering = self.data_show_numbering.isChecked()
-        include_chinese = self.data_include_chinese.isChecked()
+        # 从当前Tab获取导出选项
+        current_widget = self.data_sub_tabs.currentWidget()
+        if not current_widget:
+            return
+        
+        data_show_numbering = current_widget.property("data_show_numbering")
+        data_include_chinese = current_widget.property("data_include_chinese")
+        
+        show_numbering = data_show_numbering.isChecked() if data_show_numbering else True
+        include_chinese = data_include_chinese.isChecked() if data_include_chinese else False
         
         try:
             success = self.exporter.export(
