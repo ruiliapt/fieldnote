@@ -495,7 +495,18 @@ class WordExporter:
                     
                     # 填充第二行（注释）
                     # 第0列：留空（与编号列对齐）
-                    table.rows[1].cells[0].text = ''
+                    empty_cell = table.rows[1].cells[0]
+                    empty_cell.text = ''
+                    # 设置空单元格的边距
+                    tc = empty_cell._tc
+                    tcPr = tc.get_or_add_tcPr()
+                    tcMar = OxmlElement('w:tcMar')
+                    for side in ['top', 'bottom']:
+                        margin = OxmlElement(f'w:{side}')
+                        margin.set(qn('w:w'), '0')
+                        margin.set(qn('w:type'), 'dxa')
+                        tcMar.append(margin)
+                    tcPr.append(tcMar)
                     
                     # 第1到N列：gloss词（与原文词对齐）
                     for col_idx, word in enumerate(gloss_words):
@@ -530,7 +541,18 @@ class WordExporter:
                     
                     # 填充第三行（翻译）- 第0列留空，第1到max_len列合并
                     # 第0列：留空（与编号列对齐）
-                    table.rows[2].cells[0].text = ''
+                    empty_cell = table.rows[2].cells[0]
+                    empty_cell.text = ''
+                    # 设置空单元格的边距
+                    tc = empty_cell._tc
+                    tcPr = tc.get_or_add_tcPr()
+                    tcMar = OxmlElement('w:tcMar')
+                    for side in ['top', 'bottom']:
+                        margin = OxmlElement(f'w:{side}')
+                        margin.set(qn('w:w'), '0')
+                        margin.set(qn('w:type'), 'dxa')
+                        tcMar.append(margin)
+                    tcPr.append(tcMar)
                     
                     if translation:
                         # 合并第1到max_len列放翻译（与原文词列对齐）
